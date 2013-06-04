@@ -10,7 +10,9 @@
     top:0;
     position:fixed;
     z-index:3000;
+    
     font-family:Arial;
+    text-align:left;
 }
 
 #profiler-container.hideDetails {

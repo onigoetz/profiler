@@ -36,8 +36,8 @@ class ProfilerServiceProvider extends ServiceProvider
 
         //TODO :: render it at the right place
         //TODO :: generate data before
-
-        if (App::environment() !== 'production' and app('config')->get('profiler::enabled', true)) {
+        //  and app('config')->get('profiler::enabled', true)
+        if (App::environment() !== 'production') {
             $this->app->finish(
                 function (Request $request, Response $response) use ($toolbar) {
 
