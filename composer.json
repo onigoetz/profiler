@@ -1,0 +1,24 @@
+{
+    "name": "onigoetz/profiler",
+    "description": "",
+    "keywords": ["laravel 4", "profiler"],
+    "authors": [
+        {
+            "name": "Stéphane Goetz",
+            "email": "onigoetz@onigoetz.ch"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Onigoetz\\Profiler": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
