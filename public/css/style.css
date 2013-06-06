@@ -81,27 +81,6 @@
     background-color:#FFF;
 }
 
-/* icons */
-.profiler-tabs .console .profile-content {
-    background:url(../images/icons/text_list_numbers.png) no-repeat 2px center;
-}
-
-.profiler-tabs .speed .profile-content {
-    background:url(../images/icons/time.png) no-repeat 2px center;
-}
-
-.profiler-tabs .queries .profile-content {
-    background:url(../images/icons/database.png) no-repeat 2px center;
-}
-
-.profiler-tabs .memory .profile-content {
-    background:url(../images/icons/chart_bar.png) no-repeat 2px center;
-}
-
-.profiler-tabs .files .profile-content {
-    background:url(../images/icons/page_white_php.png) no-repeat 2px center;
-}
-
 /* info panels */
 .profile-block .profile-panel {
     position:absolute;

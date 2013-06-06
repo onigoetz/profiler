@@ -3,17 +3,10 @@ Next Generation PHP Profiler for Laravel
 
 ## Installation
 
-The composer dependency
+Add this dependency to composer with this command: 
+`composer onigoetz/profiler:dev-master`
 
-```json
-{
-    "require-dev": {
-        "onigoetz/profiler": "dev-master"
-    }
-}
-```
-
-Add `Onigoetz\Profiler\ProfilerServiceProvider` to your providers
+Add `Onigoetz\Profiler\ProfilerServiceProvider` to your providers in `app/config/app.php`
 
 Then do `./artisan asset:publish onigoetz/profiler` to publish the javascript/css files
 
