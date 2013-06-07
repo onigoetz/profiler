@@ -13,6 +13,7 @@
 
     font-family:Arial;
     text-align:left;
+    color:#000;
 }
 
 #profiler-container.hideDetails {
@@ -24,7 +25,7 @@
 /*
 ** Tabs
 */
-.profiler-tabs {
+#profiler-container .profiler-tabs {
     height:20px;
     padding:0;
     margin:0;
@@ -43,7 +44,7 @@
     border-top-left-radius:.5em;
 }
 
-.profiler-tabs .profile-block {
+#profiler-container .profiler-tab {
     margin:0 3px;
     cursor:pointer;
     font-size:12px;
@@ -51,18 +52,17 @@
     display:inline-block;
 }
 
-.profiler-tabs .profile-block.selected,
-.profiler-tabs .profile-block:hover {
+#profiler-container .profiler-tab.selected,
+#profiler-container .profiler-tab:hover {
     box-shadow:0 0 5px rgba(0, 0, 0, 0.3);
 }
 
-#profiler-container.hideDetails .profiler-tabs .profile-block {
+#profiler-container.hideDetails .profiler-tab {
     background:none;
     border:none;
-    color:#000;
 }
 
-.profiler-tabs .profile-block .profile-content {
+#profiler-container .profiler-tab-content {
     height:20px;
     line-height:20px;
     display:block;
@@ -70,53 +70,53 @@
     padding:0 5px;
 }
 
-.profiler-tabs .profile-block .profile-content img {
+#profiler-container .profiler-tab-content img {
     display: inline-block;
     float: left;
-    margin: 2px 3px;
+    margin: 2px 4px 2px 0;
 }
 
-.profiler-tabs .profile-block.selected .profile-content,
-.profiler-tabs .profile-block:hover .profile-content {
+#profiler-container .profiler-tab.selected .profiler-tab-content,
+#profiler-container .profiler-tab:hover .profiler-tab-content {
     background-color:#FFF;
 }
 
 /* info panels */
-.profile-block .profile-panel {
+#profiler-container .profiler-tab-panel {
+    display:none;
     position:absolute;
     bottom:20px;
     right:0;
+    padding:10px 8px;
     margin-right:-1px;
-    display:none;
-    color:#2F2F2F;
     border:1px solid #BBB;
     border-bottom-width:0;
-    background:white;
+    background:#fff;
+    color:#2F2F2F;
     white-space:nowrap;
-    padding:10px 8px;
     text-align:left;
 }
 
-.profile-block:hover .profile-panel {
+#profiler-container .profiler-tab:hover .profiler-tab-panel {
     display:block;
 }
 
-.profile-panel div {
+#profiler-container .profiler-tab-panel div {
     padding-bottom:5px;
 }
 
-.profile-panel strong {
+#profiler-container .profiler-tab-panel strong {
     display:inline-block;
     width:110px;
 }
 
-.profile-panel var {
+#profiler-container .profiler-tab-panel var {
     display:inline-block;
     font-weight:normal;
 }
 
 /* Close button */
-.profiler-tabs .close {
+#profiler-container .profiler-tabs .close {
     padding:0;
     margin-top:2px;
     margin-right:5px;
@@ -124,7 +124,7 @@
     opacity:1;
 }
 
-.profiler-tabs .close a {
+#profiler-container .profiler-tabs .close a {
     text-decoration:none;
     width:16px;
     height:16px;
@@ -138,7 +138,7 @@
 /*
 ** Boxes
 */
-.profiler-boxes {
+#profiler-container .profiler-boxes {
     height:100%;
     overflow:auto;
     background:white;
@@ -157,8 +157,10 @@
     display:none;
 }
 
-/* content */
-.profiler-boxes h2 {
+/*
+** content
+*/
+#profiler-container h2 {
     background:#F7F7F7;
     background-image:-moz-linear-gradient(-90deg, #E4E4E4, #FFF) !important;
     background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#E4E4E4), to(#FFF)) !important;
@@ -172,10 +174,35 @@
     line-height:36px;
 }
 
-#profiler-container hr {
-    margin:0;
+#profiler-container h3 {
+    padding-left:10px;
+    font-weight:normal;
+    color:#666;
 }
 
+#profiler-container p {
+    padding-left:20px;
+    margin:0.5em 0;
+
+    color:#333;
+}
+
+#profiler-container hr {
+     margin:0;
+}
+
+#profiler-container ul {
+    padding:0;
+}
+
+#profiler-container li {
+    list-style-type:disc;
+    display:list-item;
+}
+
+/*
+** Tables
+*/
 #profiler-container table {
     width:100%;
     margin:0;
@@ -223,6 +250,7 @@
     background-color:#DDD;
 }
 
+/* special fields */
 #profiler-container td.slow {
     background:#DA177C;
     background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0, #FA771A), color-stop(0.8, #FAA41A), color-stop(1, #DA177C));
@@ -258,15 +286,6 @@
     margin:0;
     border:0;
     padding:0;
-}
-
-/*
-** Query bindings
-*/
-#pqp-queries pre.ladybug {
-    margin:0;
-    border-width:0;
-    background:none;
 }
 
 /*
@@ -342,4 +361,10 @@ body pre.ladybug ol.tree li input:checked + ol {
 
 body pre.ladybug ol.tree li li input {
     margin-left:7px;
+}
+
+#pqp-queries pre.ladybug {
+    margin:0;
+    border-width:0;
+    background:none;
 }

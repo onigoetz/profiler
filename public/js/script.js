@@ -2,7 +2,7 @@ Profiler = {
     panels: {},
 
     hideAllTabs: function () {
-        var blocks = document.querySelectorAll("#profiler-container .profiler-tabs .profile-block");
+        var blocks = document.querySelectorAll("#profiler-container .profiler-tab");
         for (var i = 0; i < blocks.length; ++i) {
             Profiler.utils.removeClass(blocks[i], 'selected');
         }
@@ -50,7 +50,7 @@ Profiler = {
             Profiler.hideAllTabs();
         })
 
-        var tabs = document.querySelectorAll('#profiler-container .profiler-tabs .profile-block:not(.close)')
+        var tabs = document.querySelectorAll('#profiler-container .profiler-tab:not(.close)')
         for (var i = 0; i < tabs.length; ++i) {
             Profiler.utils.addEvent(tabs[i], 'click', Profiler.showHideTab)
         }

@@ -19,6 +19,7 @@ class Toolbar
         $this->panels[] = new Panels\Monolog;
         $this->panels[] = new Panels\Files;
         $this->panels[] = new Panels\Database;
+        $this->panels[] = new Panels\Variables;
         $this->panels[] = new Panels\Boomarklets;
 
 
