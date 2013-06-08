@@ -1,9 +1,7 @@
-<?php
-
-namespace Onigoetz\Profiler;
-
+<?php namespace Onigoetz\Profiler;
 
 use App;
+use Config;
 use View;
 
 class Toolbar
@@ -14,23 +12,24 @@ class Toolbar
     public function __construct()
     {
 
-        //TODO :: load conditionally
-        $this->panels[] = new Panels\Time;
-        $this->panels[] = new Panels\Monolog;
-        $this->panels[] = new Panels\Files;
-        $this->panels[] = new Panels\Database;
-        $this->panels[] = new Panels\Variables;
-        $this->panels[] = new Panels\Boomarklets;
+        $panels = Config::get('profiler::profiler.panels');
 
+        $this->panels = array();
+        foreach ($panels as $panel) {
+            $this->panels[] = App::make($panel);
+        }
 
         App::before(array($this, 'register'));
     }
 
     public function register()
     {
-        foreach ($this->panels as $panel) {
-            $panel->register();
-        }
+        $this->callPanels('register');
+    }
+
+    public function generateData()
+    {
+        $this->callPanels('getData');
     }
 
     public function render()
@@ -46,5 +45,12 @@ class Toolbar
         };
 
         return View::make('profiler::toolbar', array('panels' => $this->panels, 'panel_titles' => $titles));
+    }
+
+    protected function callPanels($method)
+    {
+        foreach ($this->panels as $panel) {
+            $panel->{$method}();
+        }
     }
 }

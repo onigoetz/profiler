@@ -1,7 +1,4 @@
-<?php
-
-namespace Onigoetz\Profiler\Panels;
-
+<?php namespace Onigoetz\Profiler;
 
 class PanelTitle
 {

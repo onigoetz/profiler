@@ -1,8 +1,8 @@
-<?php
-
-namespace Onigoetz\Profiler\Panels;
+<?php namespace Onigoetz\Profiler\Panel;
 
 use DB;
+use Onigoetz\Profiler\Panel;
+use Onigoetz\Profiler\PanelTitle;
 use Onigoetz\Profiler\Utils;
 use View;
 
@@ -10,7 +10,6 @@ class Database extends Panel
 {
 
     protected $icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEYSURBVBgZBcHPio5hGAfg6/2+R980k6wmJgsJ5U/ZOAqbSc2GnXOwUg7BESgLUeIQ1GSjLFnMwsKGGg1qxJRmPM97/1zXFAAAAEADdlfZzr26miup2svnelq7d2aYgt3rebl585wN6+K3I1/9fJe7O/uIePP2SypJkiRJ0vMhr55FLCA3zgIAOK9uQ4MS361ZOSX+OrTvkgINSjS/HIvhjxNNFGgQsbSmabohKDNoUGLohsls6BaiQIMSs2FYmnXdUsygQYmumy3Nhi6igwalDEOJEjPKP7CA2aFNK8Bkyy3fdNCg7r9/fW3jgpVJbDmy5+PB2IYp4MXFelQ7izPrhkPHB+P5/PjhD5gCgCenx+VR/dODEwD+A3T7nqbxwf1HAAAAAElFTkSuQmCC";
-    protected $handler;
 
     /**
      * @return mixed get the data to be serialized
@@ -58,7 +57,6 @@ class Database extends Panel
      */
     function render()
     {
-        $this->getData();
         return View::make('profiler::panels/database', $this->data);
     }
 

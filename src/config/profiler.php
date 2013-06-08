@@ -4,14 +4,33 @@ return array(
 
     /*
 	|--------------------------------------------------------------------------
-	| Enabled panels
+	| Enable Profiler
 	|--------------------------------------------------------------------------
 	|
-	| This option controls if each panel can be shown or not.
+	| Is the profiler enabled ?
 	|
 	*/
 
     'enabled' => true,
+
+    /*
+	|--------------------------------------------------------------------------
+	| Panels
+	|--------------------------------------------------------------------------
+	|
+	| List of classes that are panels
+	|
+	*/
+
+    'panels' => array(
+        'Onigoetz\Profiler\Panel\Time',
+        'Onigoetz\Profiler\Panel\Database',
+        'Onigoetz\Profiler\Panel\Router',
+        'Onigoetz\Profiler\Panel\Variables',
+        'Onigoetz\Profiler\Panel\Monolog',
+        'Onigoetz\Profiler\Panel\Files',
+        'Onigoetz\Profiler\Panel\Boomarklets'
+    ),
 
     /*
     |--------------------------------------------------------------------------

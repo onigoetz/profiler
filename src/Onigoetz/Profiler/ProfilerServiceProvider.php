@@ -32,16 +32,23 @@ class ProfilerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $toolbar = new Toolbar();
+        $config = app('config');
+
+        // Add the namespace manually as the namespace isn't loaded
+        // for the moment : `boot` is called after `register`
+        $config->addNamespace('profiler', __DIR__ . '/../../config');
 
         //TODO :: render it at the right place
         //TODO :: generate data before
-        //  and app('config')->get('profiler::enabled', true)
-        if (App::environment() !== 'production') {
+        if (App::environment() !== 'production' && $config->get('profiler::profiler.enabled', true)) {
+
+            $toolbar = new Toolbar();
+
             $this->app->finish(
                 function (Request $request, Response $response) use ($toolbar) {
 
                     if (!$request->ajax()) {
+                        $toolbar->generateData();
                         echo $toolbar->render()->render();
                     }
 

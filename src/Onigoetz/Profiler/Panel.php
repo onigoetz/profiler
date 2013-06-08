@@ -1,11 +1,9 @@
-<?php
-
-namespace Onigoetz\Profiler\Panels;
-
+<?php namespace Onigoetz\Profiler;
 
 abstract class Panel
 {
     protected $data;
+    protected $icon;
 
     /**
      * Register the panel to the application

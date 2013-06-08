@@ -1,7 +1,4 @@
-<?php
-
-namespace Onigoetz\Profiler;
-
+<?php namespace Onigoetz\Profiler;
 
 class Utils {
     /**

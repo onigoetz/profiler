@@ -1,26 +1,20 @@
 <?php
 
-namespace Onigoetz\Profiler\Panels;
+namespace Onigoetz\Profiler\Panel;
 
+use Onigoetz\Profiler\Panel;
+use Onigoetz\Profiler\PanelTitle;
 use View;
 
 class Boomarklets extends Panel
 {
 
     /**
-     * Register the panel to the application
-     */
-    function register()
-    {
-        // Nothing needed
-    }
-
-    /**
      * @return mixed get the data to be serialized
      */
     function getData()
     {
-        return array();
+        return null;
     }
 
     /**

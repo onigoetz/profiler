@@ -46,7 +46,6 @@
 
 #profiler-container .profiler-tab {
     margin:0 3px;
-    cursor:pointer;
     font-size:12px;
     position:relative;
     display:inline-block;
@@ -228,12 +227,17 @@
 
 #profiler-container td {
     padding:4px 15px;
-    text-align:left;
     border:none;
     border-bottom:1px solid #BBB;
+    border-right:1px solid #eee;
     color:#111;
     font-size:11px;
     vertical-align:top;
+    text-align:left;
+}
+
+#profiler-container td:last-child  {
+    border-right:0;
 }
 
 #profiler-container tr:last-child td {
@@ -255,6 +259,10 @@
     background:#DA177C;
     background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0, #FA771A), color-stop(0.8, #FAA41A), color-stop(1, #DA177C));
     background-image:-moz-linear-gradient(center bottom, #FA771A 0%, #FAA41A 80%, #DA177C 100%);
+}
+
+#profiler-container tr.matched {
+    background:#e8ffe8;
 }
 
 /*
