@@ -17,7 +17,7 @@ class Database extends Panel
     function getData()
     {
 
-        $queries = array();
+        $queries = $duplicates = array();
         $queryTotals = array(
             'count' => 0,
             'time' => 0
@@ -26,8 +26,18 @@ class Database extends Panel
         foreach (DB::getQueryLog() as $query) {
             $queryTotals['count'] += 1;
 
+            //base informations
             $query['sql'] = str_replace("\n", '', $query['query']);
             $queryTotals['time'] += $query['time'];
+
+            //duplicate queries
+            $query['sql_simplified'] = $this->simplifiedQuery($query['sql']);
+            if (array_key_exists($query['sql_simplified'], $duplicates)) {
+                $duplicates[$query['sql_simplified']]['time'] += $query['time'];
+                $duplicates[$query['sql_simplified']]['qty']++;
+            } else {
+                $duplicates[$query['sql_simplified']] = array('time' => $query['time'], 'qty' => 1);
+            }
 
             //TODO :: slow query threshold
             //TODO :: implement "explain"
@@ -35,13 +45,25 @@ class Database extends Panel
             $queries[] = $query;
         }
 
+        foreach ($duplicates as $query => $duplicate) {
+            if ($duplicate['qty'] == 1) {
+                unset($duplicates[$query]);
+            }
+        }
+
         $this->data = array(
             'queries' => $queries,
+            'duplicates' => $duplicates,
             'popup' => array(
                 'Total Queries' => $queryTotals['count'],
                 'Total Time' => Utils::getReadableTime($queryTotals['time'])
             )
         );
+    }
+
+    private function simplifiedQuery($sql)
+    {
+        return preg_replace("/(\([\?, ]*\?\))/", "(?...)", $sql);
     }
 
     /**
