@@ -9,7 +9,7 @@ Next Generation PHP Profiler for Laravel
 
 __this package is currently in development, use it at your own risk !!!__
 
-Add this dependency to composer with this command: 
+Add this dependency to composer with this command:
 `composer require onigoetz/profiler:dev-master`
 
 Add `Onigoetz\Profiler\ProfilerServiceProvider` to your providers in `app/config/app.php`
@@ -36,6 +36,7 @@ The only thing this panel provides is the time the script has run.
 
 ### Database
 Provide a list of executed queries and their bindings.
+Also checks for duplicated queries, based on raw SQL without bindings, small but useful tool to track down which query could be improved
 
 //TODO highlight slow queries, configure the slow query threshold
 
