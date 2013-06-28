@@ -5,6 +5,7 @@ use Onigoetz\Profiler\Panel;
 use Onigoetz\Profiler\PanelTitle;
 use Onigoetz\Profiler\Utils;
 use View;
+use Config;
 
 class Database extends Panel
 {
@@ -23,6 +24,8 @@ class Database extends Panel
             'time' => 0
         );
 
+        $threshold = Config::get('profiler::profiler.slow_query');
+
         foreach (DB::getQueryLog() as $query) {
             $queryTotals['count'] += 1;
 
@@ -37,6 +40,10 @@ class Database extends Panel
                 $duplicates[$query['sql_simplified']]['qty']++;
             } else {
                 $duplicates[$query['sql_simplified']] = array('time' => $query['time'], 'qty' => 1);
+            }
+
+            if ($query['time'] >= $threshold) {
+                $query['slow'] = 'slow';
             }
 
             //TODO :: slow query threshold

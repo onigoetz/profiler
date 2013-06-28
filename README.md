@@ -25,6 +25,7 @@ You can override all default values by doing `./artisan config:publish onigoetz/
 
 - `enabled` A simple boolean to enable the profiler or not.
 - `panels` An array of classes that extend `Onigoetz\Profiler\Panel` you can add your own panels and reorder them.
+- `slow_query` Threshold in milliseconds after which it is considered
 
 ## Panels
 All panels are work in progress for the moment, many changes may evolve
@@ -37,8 +38,6 @@ The only thing this panel provides is the time the script has run.
 ### Database
 Provide a list of executed queries and their bindings.
 Also checks for duplicated queries, based on raw SQL without bindings, small but useful tool to track down which query could be improved
-
-//TODO highlight slow queries, configure the slow query threshold
 
 ### Router
 List of declared routes with some more informations ( route name, filter, hostname, action …)

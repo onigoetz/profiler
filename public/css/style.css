@@ -256,9 +256,7 @@
 
 /* special fields */
 #profiler-container td.slow {
-    background: #DA177C;
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #FA771A), color-stop(0.8, #FAA41A), color-stop(1, #DA177C));
-    background-image: -moz-linear-gradient(center bottom, #FA771A 0%, #FAA41A 80%, #DA177C 100%);
+    background: #fad2d2;
 }
 
 #profiler-container tr.matched {
@@ -300,8 +298,9 @@
 ** SQL Bindings
 */
 #profiler-container .query .indicator {
-    margin: 7px;
+    margin: 4px 7px;
     font-size: 12px;
+    height: 12px;
 }
 
 #profiler-container .query pre {
@@ -319,6 +318,14 @@
 
 #profiler-container .query .sql-bindings pre {
     border-top-width: 0;
+}
+
+#profiler-container .query .sql-bindings {
+    margin:0;
+}
+
+#profiler-container .query .sql-bindings li {
+    list-style-type:none;
 }
 
 /*

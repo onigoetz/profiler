@@ -4,6 +4,7 @@ use App;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class ProfilerServiceProvider extends ServiceProvider
 {
@@ -55,6 +56,12 @@ class ProfilerServiceProvider extends ServiceProvider
                 }
             );
         }
+
+        $this->app['stopwatch'] = $this->app->share(
+            function () {
+                return new Stopwatch;
+            }
+        );
     }
 
     /**
