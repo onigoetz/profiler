@@ -65,7 +65,9 @@ class Router extends Panel
      */
     protected function getRouteInformation($name, Route $route)
     {
-        $uri = head($route->getMethods()) . ' ' . $route->getPath();
+        $path = $route->getPath();
+        
+        $uri = head($route->getMethods()) . ' ' . link_to($path, $path);
 
         $action = $route->getAction() ? : 'Closure';
 
