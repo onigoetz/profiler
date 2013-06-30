@@ -2,6 +2,7 @@
 
 use Onigoetz\Profiler\Panel;
 use Onigoetz\Profiler\PanelTitle;
+use Onigoetz\Profiler\Stopwatch;
 use Onigoetz\Profiler\Utils;
 use View;
 
@@ -27,6 +28,10 @@ class Time extends Panel
      */
     function getData()
     {
+        Stopwatch::stopSection('__application__');
+
+        $this->data['events'] = Stopwatch::getSectionEvents('__application__');
+
         $this->data['totalTime'] = microtime(true) - $this->data['appStartTime'];
 
         $this->data['popup'] = array(
@@ -50,7 +55,7 @@ class Time extends Panel
      */
     function render()
     {
-        return View::make('profiler::panels/time', array());
+        return View::make('profiler::panels/time', array('events' => $this->data['events']));
     }
 
     function renderTitle()

@@ -59,7 +59,9 @@ class ProfilerServiceProvider extends ServiceProvider
 
         $this->app['stopwatch'] = $this->app->share(
             function () {
-                return new Stopwatch;
+                $stopwatch = new Stopwatch;
+                $stopwatch->openSection(); //open application wide section
+                return $stopwatch;
             }
         );
     }

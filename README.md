@@ -9,10 +9,13 @@ Next Generation PHP Profiler for Laravel
 
 __this package is currently in development, use it at your own risk !!!__
 
-Add this dependency to composer with this command:
+Add this dependency to `composer.json` with this command:
 `composer require onigoetz/profiler:dev-master`
 
-Add `Onigoetz\Profiler\ProfilerServiceProvider` to your providers in `app/config/app.php`
+in `app/config/app.php`
+
+- Add `'Onigoetz\Profiler\ProfilerServiceProvider'` to your providers
+- Add `'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'` to your aliases
 
 Then do `./artisan asset:publish onigoetz/profiler` to publish the javascript/css files
 
@@ -32,9 +35,22 @@ You can override all default values by doing `./artisan config:publish onigoetz/
 All panels are work in progress for the moment, many changes may evolve
 
 ### Time
-The idea behind this panel is to make a timeline like it was done in the symfony profiler.
+This panel provides a way to watch for events in a graphical way.
 
-The only thing this panel provides is the time the script has run.
+You can profile anything anywhere in your code by using the `Stopwatch` facade.
+
+It's a facade for the [Stopwatch Symfony component](http://symfony.com/doc/current/components/stopwatch.html)
+so you don't have to initalize it to use it
+
+__Example:__
+
+```php
+Stopwatch::start('stuff to benchmark');
+
+//do your stuff
+
+Stopwatch::stop('stuff to benchmark');
+```
 
 ### Database
 Provide a list of executed queries and their bindings.
