@@ -2,33 +2,32 @@ Profiler = {
     panels: {},
 
     hideAllTabs: function () {
-        var blocks = document.querySelectorAll("#profiler-container .profiler-tab");
+        var blocks = document.querySelectorAll("#profiler-container .op-tab");
         for (var i = 0; i < blocks.length; ++i) {
-            Profiler.utils.removeClass(blocks[i], 'selected');
+            Profiler.utils.removeClass(blocks[i], 'op-tab--selected');
         }
 
-        var boxes = document.querySelectorAll("#profiler-container .profiler-boxes > div");
-        for (var i = 0; i < boxes.length; ++i) {
-            Profiler.utils.removeClass(boxes[i], 'selected');
+        var boxes = document.querySelectorAll("#profiler-container .op-panels > div");
+        for (i = 0; i < boxes.length; ++i) {
+            Profiler.utils.removeClass(boxes[i], 'op-panel--selected');
         }
     },
 
     showHideTab: function (event) {
         var $container = document.getElementById('profiler-container');
 
-        if (Profiler.utils.hasClass($container, 'hideDetails')) {
-            Profiler.utils.removeClass($container, 'hideDetails');
+        if (Profiler.utils.hasClass($container, 'op-container--hide')) {
+            Profiler.utils.removeClass($container, 'op-container--hide');
         }
 
         Profiler.hideAllTabs();
-
-        Profiler.utils.addClass(this, 'selected');
+        Profiler.utils.addClass(this, 'op-tab--selected');
 
         //select new tab
         var tab_name = this.getAttribute('data-name');
-        Profiler.utils.addClass(document.getElementById("pqp-" + tab_name), 'selected');
+        Profiler.utils.addClass(document.getElementById("op-panel-" + tab_name), 'op-panel--selected');
 
-        for (panel in Profiler.panels) {
+        for (var panel in Profiler.panels) {
             if (Profiler.panels.hasOwnProperty(panel) && typeof Profiler.panels[panel].onPanelChange === "function") {
                 Profiler.panels[panel].onPanelChange(this, event);
             }
@@ -39,47 +38,47 @@ Profiler = {
 
         var $container = document.getElementById('profiler-container');
 
-        var close = Profiler.utils.query('#profiler-container .profiler-tabs .close');
+        var close = Profiler.utils.query('#profiler-container .op-tabs .close');
         Profiler.utils.addEvent(close, 'click', function () {
-            if (Profiler.utils.hasClass($container, 'hideDetails')) {
-                Profiler.utils.removeClass($container, 'hideDetails')
+            if (Profiler.utils.hasClass($container, 'op-container--hide')) {
+                Profiler.utils.removeClass($container, 'op-container--hide');
             } else {
-                Profiler.utils.addClass($container, 'hideDetails')
+                Profiler.utils.addClass($container, 'op-container--hide');
             }
 
             Profiler.hideAllTabs();
-        })
+        });
 
-        var tabs = document.querySelectorAll('#profiler-container .profiler-tab:not(.close)')
+        var tabs = document.querySelectorAll('#profiler-container .op-tab:not(.close)');
         for (var i = 0; i < tabs.length; ++i) {
-            Profiler.utils.addEvent(tabs[i], 'click', Profiler.showHideTab)
+            Profiler.utils.addEvent(tabs[i], 'click', Profiler.showHideTab);
         }
 
         //onload events
-        for (panel in Profiler.panels) {
+        for (var panel in Profiler.panels) {
             if (Profiler.panels.hasOwnProperty(panel) && typeof Profiler.panels[panel].onLoad === "function") {
                 Profiler.utils.addEvent(window, 'load', Profiler.panels[panel].onLoad);
             }
         }
     }
-}
+};
 
 Profiler.utils = {
     /**
      * In-memory key-value cache manager
      */
-    cache: new function () {
+    cacheManager: function () {
         "use strict";
         var dict = {};
 
         this.get = function (key) {
             return dict.hasOwnProperty(key) ? dict[key] : null;
-        }
+        };
 
         this.set = function (key, value) {
             dict[key] = value;
             return value;
-        }
+        };
     },
 
     /**
@@ -151,7 +150,7 @@ Profiler.utils = {
         if (obj.attachEvent) {
             obj["e" + type + fn] = fn;
             obj[type + fn] = function () {
-                obj["e" + type + fn](window.event)
+                obj["e" + type + fn](window.event);
             };
             obj.attachEvent("on" + type, obj[type + fn]);
         } else {
@@ -165,7 +164,7 @@ Profiler.utils = {
         if (document.createEventObject) {
             // dispatch for IE
             evt = document.createEventObject();
-            return element.fireEvent('on' + event, evt)
+            return element.fireEvent('on' + event, evt);
         } else {
             // dispatch for firefox + others
             evt = document.createEvent("HTMLEvents");
@@ -173,7 +172,9 @@ Profiler.utils = {
             return !element.dispatchEvent(evt);
         }
     }
-}
+};
+
+Profiler.utils.cache = new Profiler.utils.cacheManager();
 
 Profiler.panels.bookmarklets = {
     get_js: function () {
@@ -214,7 +215,7 @@ Profiler.panels.bookmarklets = {
         Profiler.panels.bookmarklets.get_css();
         Profiler.panels.bookmarklets.get_js();
     }
-}
+};
 
 Profiler.panels.speed = {
     canvasManagerInstance: null,
@@ -253,7 +254,7 @@ Profiler.panels.speed = {
          * Get the width of the container.
          */
         function getContainerWidth() {
-            return Profiler.utils.query('#pqp-speed h2').clientWidth;
+            return Profiler.utils.query('#op-panel-time h2').clientWidth;
         }
 
         /**
@@ -265,17 +266,13 @@ Profiler.panels.speed = {
          * @param width     the width of the canvas.
          */
         this.drawOne = function (request, max, threshold, width) {
-            "use strict";
             var text,
                 ms,
                 xc,
-                drawableEvents,
-                mainEvents,
                 elementId = 'timeline_' + request.id,
-                canvasHeight = 0,
-                gapPerEvent = 38,
+                gapPerEvent = 32,
                 colors = _drawingColors,
-                space = 10.5,
+                space = 10,
                 ratio = (width - space * 2) / max,
                 h = space,
                 x = request.left * ratio + space, // position
@@ -283,14 +280,25 @@ Profiler.panels.speed = {
                 ctx = canvas.getContext("2d");
 
             // Filter events whose total time is below the threshold.
-            drawableEvents = request.events.filter(function (event) {
-                return event.totaltime >= threshold;
+            var drawableEvents = request.events.filter(function (event) {
+                return event.duration >= threshold;
             });
 
-            canvasHeight += gapPerEvent * drawableEvents.length;
+            // For retina displays so text and boxes will be crisp
+            var devicePixelRatio = window.devicePixelRatio == "undefined" ? 1 : window.devicePixelRatio;
+            var backingStoreRatio = ctx.webkitBackingStorePixelRatio == "undefined" ? 1 : ctx.webkitBackingStorePixelRatio;
+            var scaleRatio = devicePixelRatio / 1;
 
-            canvas.width = width;
-            canvas.height = canvasHeight;
+            var canvasHeight = gapPerEvent * drawableEvents.length;
+
+            canvas.width = width * scaleRatio;
+            canvas.height = canvasHeight * scaleRatio;
+
+            canvas.style.width = width + 'px';
+            canvas.style.height = canvasHeight + 'px';
+
+            ctx.translate(0.5, 0.5);
+            ctx.scale(scaleRatio, scaleRatio);
 
             ctx.textBaseline = "middle";
             ctx.lineWidth = 0;
@@ -300,12 +308,14 @@ Profiler.panels.speed = {
 
             drawableEvents.forEach(function (event) {
                 event.periods.forEach(function (period) {
-                    var timelineHeadPosition = x + period.begin * ratio;
+                    var timelineHeadPosition = x + period.start * ratio;
 
                     if (isChildEvent(event)) {
+                        //child event rectangle
                         ctx.fillStyle = colors.child_sections;
-                        ctx.fillRect(timelineHeadPosition, 0, (period.end - period.begin) * ratio, canvasHeight);
+                        ctx.fillRect(timelineHeadPosition, 0, (period.end - period.start) * ratio, canvasHeight);
                     } else if (isSectionEvent(event)) {
+                        //vertical lines around sections
                         var timelineTailPosition = x + period.end * ratio;
 
                         ctx.beginPath();
@@ -321,35 +331,31 @@ Profiler.panels.speed = {
             });
 
             // Filter for main events.
-            mainEvents = drawableEvents.filter(function (event) {
-                return !isChildEvent(event)
+            var mainEvents = drawableEvents.filter(function (event) {
+                return !isChildEvent(event);
             });
 
             // For each main event, draw the visual presentation of timelines.
             mainEvents.forEach(function (event) {
-
-                h += 8;
+                h += 7;
 
                 // For each sub event, ...
                 event.periods.forEach(function (period) {
                     // Set the drawing style.
-                    ctx.fillStyle = colors['default'];
-                    ctx.strokeStyle = colors['default'];
+                    ctx.fillStyle = ctx.strokeStyle = colors['default'];
 
                     if (colors[event.name]) {
-                        ctx.fillStyle = colors[event.name];
-                        ctx.strokeStyle = colors[event.name];
+                        ctx.fillStyle = ctx.strokeStyle = colors[event.name];
                     } else if (colors[event.category]) {
-                        ctx.fillStyle = colors[event.category];
-                        ctx.strokeStyle = colors[event.category];
+                        ctx.fillStyle = ctx.strokeStyle = colors[event.category];
                     }
 
                     // Draw the timeline
-                    var timelineHeadPosition = x + period.begin * ratio;
+                    var timelineHeadPosition = x + period.start * ratio;
 
                     if (!isSectionEvent(event)) {
                         ctx.fillRect(timelineHeadPosition, h + 3, 2, 6);
-                        ctx.fillRect(timelineHeadPosition, h, (period.end - period.begin) * ratio || 2, 6);
+                        ctx.fillRect(timelineHeadPosition, h + 0.5, (period.end - period.start) * ratio || 2, 5);
                     } else {
                         var timelineTailPosition = x + period.end * ratio;
 
@@ -383,7 +389,7 @@ Profiler.panels.speed = {
                     }
                 });
 
-                h += 30;
+                h += 25;
 
                 ctx.beginPath();
                 ctx.strokeStyle = "#dfdfdf";
@@ -396,29 +402,31 @@ Profiler.panels.speed = {
             h = space;
 
             // For each event, draw the label.
+            var font_12 = "12px sans-serif";
+            var font_10 = "10px sans-serif";
             mainEvents.forEach(function (event) {
 
                 ctx.fillStyle = "#444";
-                ctx.font = "12px sans-serif";
+                ctx.font = font_12;
                 text = event.name;
-                ms = " ~ " + (event.totaltime < 1 ? event.totaltime : parseInt(event.totaltime, 10)) + " ms";
+                ms = " ~ " + (event.duration < 1 ? event.duration : parseInt(event.duration, 10)) + " ms / ~ " + event.memory + " MB";
                 if (x + event.starttime * ratio + ctx.measureText(text + ms).width > width) {
                     ctx.textAlign = "end";
-                    ctx.font = "10px sans-serif";
+                    ctx.font = font_10;
                     xc = x + event.endtime * ratio - 1;
                     ctx.fillText(ms, xc, h);
 
                     xc -= ctx.measureText(ms).width;
-                    ctx.font = "12px sans-serif";
+                    ctx.font = font_12;
                     ctx.fillText(text, xc, h);
                 } else {
                     ctx.textAlign = "start";
-                    ctx.font = "12px sans-serif";
+                    ctx.font = font_12;
                     xc = x + event.starttime * ratio + 1;
                     ctx.fillText(text, xc, h);
 
                     xc += ctx.measureText(text).width;
-                    ctx.font = "10px sans-serif";
+                    ctx.font = font_10;
                     ctx.fillText(ms, xc, h);
                 }
 
@@ -427,8 +435,6 @@ Profiler.panels.speed = {
         };
 
         this.drawAll = function (width, threshold) {
-            "use strict";
-
             width = width || getContainerWidth();
             threshold = threshold || this.getThreshold();
 
@@ -446,7 +452,7 @@ Profiler.panels.speed = {
                 return _threshold;
             }
 
-            _threshold = parseInt(threshold);
+            _threshold = parseInt(threshold, 10);
 
             return _threshold;
         };
@@ -471,6 +477,18 @@ Profiler.panels.speed = {
             .drawAll();
     },
 
+    onLoad: function() {
+        if(window.onigoetz_profiler !== undefined) {
+            Profiler.panels.speed.init(window.onigoetz_profiler.requests_data, window.onigoetz_profiler.colors);
+        }
+    },
+
+    onPanelChange: function(item, event) {
+        if (Profiler.utils.hasClass(item, "time")) {
+            Profiler.panels.speed.onResizeAndSubmit(event);
+        }
+    },
+
     init: function (requests_data, colors) {
         var canvasManager = new Profiler.panels.speed.CanvasManager(requests_data.requests, requests_data.max, colors);
         Profiler.panels.speed.canvasManagerInstance = canvasManager;
@@ -479,7 +497,7 @@ Profiler.panels.speed = {
         canvasManager.drawAll();
 
         // Update the colors of legends.
-        var timelineLegends = document.querySelectorAll('#pqp-speed .legends > span[data-color]');
+        var timelineLegends = document.querySelectorAll('#op-panel-time .legends > span[data-color]');
 
         for (var i = 0; i < timelineLegends.length; ++i) {
             var timelineLegend = timelineLegends[i];
@@ -492,16 +510,9 @@ Profiler.panels.speed = {
             elementThresholdControl = Profiler.utils.query('input[name="threshold"]');
 
         elementTimelineControl.onsubmit = window.onresize = Profiler.panels.speed.onResizeAndSubmit;
-
         elementThresholdControl.onclick = elementThresholdControl.onchange = elementThresholdControl.onkeyup = Profiler.panels.speed.onThresholdChange;
-    },
-
-    onPanelChange: function(item, event) {
-        if (Profiler.utils.hasClass(item, "speed")) {
-            Profiler.panels.speed.onResizeAndSubmit(event);
-        }
     }
-}
+};
 
 
 Profiler.init();

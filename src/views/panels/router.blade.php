@@ -1,6 +1,6 @@
 <h2>Routes</h2>
 
-<table class=main>
+<table class=op-table>
     <thead>
     <tr>
         <th>Domain</th>

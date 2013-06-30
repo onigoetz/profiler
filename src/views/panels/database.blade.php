@@ -1,7 +1,7 @@
 <h2>Database</h2>
 
 @if (count($queries))
-    <table class="main">
+    <table class="op-table">
     @foreach ($queries as $query)
         <tr>
             <td class="query {{ (array_key_exists('slow', $query)? $query['slow'] : '') }}">
@@ -24,7 +24,7 @@
 
     <h3>Duplicates</h3>
     @if (count($duplicates))
-        <table class="main">
+        <table class="op-table">
             @foreach ($duplicates as $sql => $query)
             <tr>
                 <td class="query {{ (array_key_exists('slow', $query)? $query['slow'] : '') }}">

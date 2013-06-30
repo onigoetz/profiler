@@ -24,6 +24,7 @@ You can override all default values by doing `./artisan config:publish onigoetz/
 ### Options
 
 - `enabled` A simple boolean to enable the profiler or not.
+- `assets_auto` If set to true (default) it will include its assets itself, you can disable this to add the assets to your own build process
 - `panels` An array of classes that extend `Onigoetz\Profiler\Panel` you can add your own panels and reorder them.
 - `slow_query` Threshold in milliseconds after which it is considered
 
@@ -56,7 +57,6 @@ List of loaded files and their size
 
 ### Bookmarklets
 A list of useful bookmarklets + loaded scripts on the current page
-
 
 ## Why a new profiler ?
 Yes, I know, there are a lot of profilers out there. But for my needs I wanted a profiler that doesn't take a lot of place on the screen and quickly gives useful informations about the application.

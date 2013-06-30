@@ -1,10 +1,10 @@
 <h2>Variables</h2>
 
 @foreach ($variables as $label => $data)
-<div class="data-table">
+<div>
     <h3>{{ $label }}</h3>
     @if(!empty($data))
-        <table class="main">
+        <table class=op-table>
             @foreach($data as $k => $value)
                 <tr>
                     <td>{{ $e($k) }}</td>

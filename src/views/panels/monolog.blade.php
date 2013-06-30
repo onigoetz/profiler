@@ -3,7 +3,7 @@
 @if (empty($logs))
 <h3>This panel has no log items.</h3>
 @else
-<table class="main">
+<table class="op-table">
     @foreach ($logs as $log)
     <tr><td>{{ $logger->getLevelName($log['level']) }}</td><td> {{ nl2br(print_r($log['message'], true)) }}</td></tr>
     @endforeach

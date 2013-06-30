@@ -14,11 +14,22 @@ return array(
     'enabled' => true,
 
     /*
+    |--------------------------------------------------------------------------
+    | Include assets automatically
+    |--------------------------------------------------------------------------
+    |
+    | Should the profiler include its assets automatically ?
+    |
+    */
+
+    'assets_auto' => true,
+
+    /*
 	|--------------------------------------------------------------------------
 	| Panels
 	|--------------------------------------------------------------------------
 	|
-	| List of classes that are panels
+	| List of panels to load
 	|
 	*/
 
@@ -37,7 +48,7 @@ return array(
     | Loglevel
     |--------------------------------------------------------------------------
     |
-    | Loglevel to show in the panel
+    | Minimum Loglevel to show in the panel
     |
     */
 
