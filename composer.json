@@ -1,6 +1,6 @@
 {
     "name": "onigoetz/profiler",
-    "description": "",
+    "description": "Next Generation PHP Profiler for Laravel",
     "keywords": ["laravel 4", "profiler"],
     "authors": [
         {
