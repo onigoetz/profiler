@@ -34,7 +34,7 @@ class ProfilerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $config = app('config');
+        $config = $this->app['config'];
 
         // Add the namespace manually as the namespace isn't loaded
         // for the moment : `boot` is called after `register`
@@ -57,22 +57,13 @@ class ProfilerServiceProvider extends ServiceProvider
 
             $toolbar = new Toolbar();
 
-
             $stopwatch->start('Application initialisation.', 'section');
 
-            $this->app->booting(
-                function () use ($stopwatch) {
-                    $stopwatch->stop('Application initialisation.');
-                    $stopwatch->start('Framework booting.', 'section');
-                    $stopwatch->start('Framework running.', 'section');
-                }
-            );
-
-            $this->app->booted(
-                function () use ($stopwatch) {
-                    $stopwatch->stop('Framework booting.');
-                }
-            );
+            //Populate timeline
+            $this->app->booting(array($this, 'booting'));
+            $this->app->booted(array($this, 'booted'));
+            $this->app->before(array($this, 'start_router_dispatch'));
+            $this->app->after(array($this, 'stop_router_dispatch'));
 
             $this->app->finish(
                 function (Request $request, Response $response) use ($toolbar, $stopwatch) {
@@ -85,22 +76,26 @@ class ProfilerServiceProvider extends ServiceProvider
                     }
                 }
             );
-
-
-            $this->app->before(
-                function () use ($stopwatch) {
-                    $stopwatch->start('Router dispatch.', 'section');
-                }
-            );
-
-            $this->app->after(
-                function () use ($stopwatch) {
-                    $stopwatch->stop('Router dispatch.');
-                }
-            );
         }
+    }
 
+    public function booting() {
+        $this->app['stopwatch']->stop('Application initialisation.');
+        $this->app['stopwatch']->start('Framework booting.', 'section');
+        $this->app['stopwatch']->start('Framework running.', 'section');
+    }
 
+    public function booted()
+    {
+        $this->app['stopwatch']->stop('Framework booting.');
+    }
+
+    public function start_router_dispatch() {
+        $this->app['stopwatch']->start('Router dispatch.', 'section');
+    }
+
+    public function stop_router_dispatch() {
+        $this->app['stopwatch']->stop('Router dispatch.');
     }
 
     /**

@@ -9,6 +9,10 @@ Next Generation PHP Profiler for Laravel
 
 __this package is currently in development, use it at your own risk !!!__
 
+There are two ways to install this profiler
+
+### Require
+
 Add this dependency to `composer.json` with this command:
 `composer require onigoetz/profiler:dev-master`
 
@@ -18,6 +22,29 @@ in `app/config/app.php`
 - Add `'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'` to your aliases
 
 Then do `./artisan asset:publish onigoetz/profiler` to publish the javascript/css files
+
+### Require-dev (only on development machine)
+
+Add this dependency to `composer.json` with this command:
+`composer require-dev onigoetz/profiler:dev-master`
+
+In `app/config/app.php` add `'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'` to your aliases.
+
+At the end of `app/start/global.php` add:
+
+```php
+if (class_exists("Onigoetz\\Profiler\\ProfilerServiceProvider")) {
+    $provider = new Onigoetz\Profiler\ProfilerServiceProvider(app());
+    $app->register($provider);
+    $provider->boot();
+    $provider->booting();
+    $provider->booted();
+    $provider->start_router_dispatch();
+}
+```
+
+This way is not recommended as it means that each call to stopwatch has to be wrapped in a `if(class_exists...)`
+
 
 ## Configuration
 By default, the profiler will run only in environment that are not "production"
