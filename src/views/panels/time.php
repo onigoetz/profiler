@@ -17,25 +17,24 @@ $colors = array(
     'propel' =>  '#f4d',
     'child_sections' =>  '#eed',
 );
-?>
 
-{{ display_timeline('timeline_' . $token, $events, $colors) }}
+ echo display_timeline('timeline_' . $token, $events, $colors);
 
-<?php
+
 // no child requests in laravel
 /*
 foreach ($profile->children as $child) {
     $events = $child->getcollector('time')->getEvents();
     echo '<h3>' .
-        'Sub-request "{{ $child->getcollector("request")->requestattributes->get("_controller")' .
+        'Sub-request " . $child->getcollector("request")->requestattributes->get("_controller")' .
         '<small> - ' . $events['__section__']->getDuration() . ' ms</small>' .
         '</h3>';
 }
 */
 ?>
 
-
 <script>
+
     window.onigoetz_profiler = {};
     window.onigoetz_profiler.colors = <?php echo json_encode($colors); ?>;
     window.onigoetz_profiler.requests_data = <?php
@@ -54,8 +53,6 @@ foreach ($profile->children as $child) {
 
         echo json_encode($events); ?>
 </script>
-
-
 <?php
 function dump_request_data($token, $profile, $events, $origin)
 {
@@ -102,9 +99,9 @@ function display_timeline($id, $events, $colors)
     ?>
     <div class="sf-profiler-timeline">
         <div class="legends">
-            @foreach ($colors as $category => $color)
+            <?php foreach ($colors as $category => $color): ?>
             <span data-color="<?php echo $color ?>"><?php echo $category ?></span>
-            @endforeach
+            <?php endforeach ?>
         </div>
         <canvas width="680" height="" id="<?php echo $id ?>" class="timeline"></canvas>
     </div>

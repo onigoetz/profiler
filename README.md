@@ -7,7 +7,9 @@ Next Generation PHP Profiler for Laravel
 
 ## Installation
 
-__this package is currently in development, use it at your own risk !!!__
+__This package is currently in development, use it at your own risk !!!__
+
+__!!! UPDATE :: the ProfilerServiceProvider was moved to another namespace, update your app configs !!!__
 
 There are two ways to install this profiler
 
@@ -18,7 +20,7 @@ Add this dependency to `composer.json` with this command:
 
 in `app/config/app.php`
 
-- Add `'Onigoetz\Profiler\ProfilerServiceProvider'` to your providers
+- Add `'Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider'` to your providers
 - Add `'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'` to your aliases
 
 Then do `./artisan asset:publish onigoetz/profiler` to publish the javascript/css files
@@ -33,8 +35,8 @@ In `app/config/app.php` add `'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'` to yo
 At the end of `app/start/global.php` add:
 
 ```php
-if (class_exists("Onigoetz\\Profiler\\ProfilerServiceProvider")) {
-    $provider = new Onigoetz\Profiler\ProfilerServiceProvider(app());
+if (class_exists("Onigoetz\\Profiler\\Support\\Laravel\\ProfilerServiceProvider")) {
+    $provider = new Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider(app());
     $app->register($provider);
     $provider->boot();
     $provider->booting();

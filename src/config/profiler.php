@@ -33,14 +33,27 @@ return array(
 	|
 	*/
 
-    'panels' => array(
-        'Onigoetz\Profiler\Panel\Time',
-        'Onigoetz\Profiler\Panel\Database',
-        'Onigoetz\Profiler\Panel\Router',
-        'Onigoetz\Profiler\Panel\Variables',
-        'Onigoetz\Profiler\Panel\Monolog',
-        'Onigoetz\Profiler\Panel\Files',
-        'Onigoetz\Profiler\Panel\Boomarklets'
+    'panels' => array( 
+        'time',
+        'database',
+        'router',
+        'variables',
+        'monolog',
+        'files',
+        'bookmarklets'
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Storage
+    |--------------------------------------------------------------------------
+    |
+    | How to store the panels data
+    |
+    */
+
+    'storage' => array(
+        'driver' => 'file',
     ),
 
     /*
