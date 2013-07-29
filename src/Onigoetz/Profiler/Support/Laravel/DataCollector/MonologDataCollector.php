@@ -26,6 +26,11 @@ class MonologDataCollector extends DataCollector {
      */
     function getData()
     {
+        //this may happen in case of early termination
+        if($this->handler == null) {
+            $this->register();
+        }
+
         return array(
             'monolog' => array('logs' =>  $this->handler->getRecords(), 'logger' => app('log')->getMonolog())
         );

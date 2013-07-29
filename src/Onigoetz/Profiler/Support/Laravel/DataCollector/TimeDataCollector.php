@@ -25,6 +25,11 @@ class TimeDataCollector extends DataCollector {
      */
     public function getData()
     {
+        //this may happen in case of early termination
+        if (empty($this->data)) {
+            $this->register();
+        }
+
         Stopwatch::stopSection('__application__');
 
         $this->data['events'] = Stopwatch::getSectionEvents('__application__');

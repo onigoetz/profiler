@@ -43,7 +43,7 @@ class RouterDataCollector extends DataCollector
      * @param  string $base_path
      * @return array
      */
-    protected function getRouteInformation($name, Route $route, Route $current, $base_path)
+    protected function getRouteInformation($name, Route $route, $current, $base_path)
     {
         $path = $route->getPath();
 
