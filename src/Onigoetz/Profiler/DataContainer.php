@@ -1,6 +1,7 @@
 <?php namespace Onigoetz\Profiler;
 
 use Onigoetz\Profiler\DataCollector\DataCollector;
+use Onigoetz\Profiler\Storage\StorageInterface;
 
 class DataContainer {
 
@@ -15,12 +16,37 @@ class DataContainer {
     protected $data;
 
     /**
+     * @var StorageInterface
+     */
+    protected $storage;
+
+    /**
      * Contains DataCollectors
      */
     public function __construct()
     {
         $this->collectors = array();
         $this->data = array();
+
+        $this->uniqueId = microtime(true) . '_' . mt_rand();
+    }
+
+    public function getUniqueId()
+    {
+        return $this->uniqueId;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCollectorProvides()
+    {
+        $provides = array();
+        foreach ($this->collectors as $collector) {
+            $provides = array_merge($provides, $collector->provides());
+        }
+
+        return $provides;
     }
 
     /**
@@ -31,6 +57,18 @@ class DataContainer {
      */
     public function add(DataCollector $collector) {
         $this->collectors[] = $collector;
+
+        return $this;
+    }
+
+    /**
+     * Set the storage system
+     *
+     * @param StorageInterface $storage
+     * @return $this
+     */
+    public function setStorage(StorageInterface $storage) {
+        $this->storage = $storage;
 
         return $this;
     }
@@ -63,6 +101,11 @@ class DataContainer {
         }
     }
 
+    /**
+     * Get the generated data
+     *
+     * @return array
+     */
     public function getData()
     {
         return $this->data;
@@ -78,6 +121,18 @@ class DataContainer {
         foreach ($this->collectors as $collector) {
             $collector->{$method}();
         }
+    }
+
+    /**
+     * Save the data with the storage
+     */
+    public function saveData()
+    {
+        if ($this->storage == null) {
+            return;
+        }
+
+        $this->storage->put($this);
     }
 
     /**

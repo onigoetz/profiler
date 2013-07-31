@@ -1,5 +1,7 @@
 <?php namespace Onigoetz\Profiler\Storage;
 
+use Onigoetz\Profiler\DataContainer;
+
 class FileStorage implements StorageInterface {
 
     private $path;
@@ -53,9 +55,14 @@ class FileStorage implements StorageInterface {
         return $requests;
     }
 
-    public function put($request) {
+    public function put(DataContainer $request) {
+
+        if (!is_dir($this->path)) {
+            mkdir($this->path);
+        }
+
         file_put_contents(
-            $this->path . '/' . $request->id . $this->extension,
+            $this->path . '/' . $request->getUniqueId() . $this->extension,
             serialize($request)
         );
     }

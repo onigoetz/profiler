@@ -4,6 +4,7 @@ use App;
 use Log;
 use Onigoetz\Profiler\DataContainer;
 use Onigoetz\Profiler\DataCollector\FilesDataCollector;
+use Onigoetz\Profiler\Storage\FileStorage;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\MonologDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\DatabaseDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\RouterDataCollector;
@@ -67,6 +68,7 @@ class ProfilerServiceProvider extends ServiceProvider
             ->add(new RouterDataCollector)
             ->add(new TimeDataCollector)
             ->add(new VariablesDataCollector);
+            //->setStorage(new FileStorage(array('path' => $this->app['path.storage'] . '/profiler')));
 
         $this->app->before(array($collectors, 'register'));
 
@@ -86,6 +88,7 @@ class ProfilerServiceProvider extends ServiceProvider
 
                 if (!$request->ajax()) {
                     $collectors->generateData();
+                    $collectors->saveData();
                     echo $toolbar->render();
                 }
             }

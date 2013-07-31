@@ -33,7 +33,7 @@ return array(
 	|
 	*/
 
-    'panels' => array( 
+    'panels' => array(
         'time',
         'database',
         'router',
