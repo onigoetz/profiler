@@ -15,18 +15,11 @@ class Toolbar implements OutputInterface
     {
         $this->data = $data;
 
-        $collectors = $this->data->getCollectorProvides();
-
-        $config_panels = Config::get('panels');
+        $panels = Config::get('panels');
 
         include __DIR__ . '/../../../panels.php';
 
-        $this->panels = array();
-        foreach ($config_panels as $panel) {
-            if (in_array($panel, $collectors)) {
-                $this->panels[$panel] = Panels::$panels[$panel];
-            }
-        }
+        $this->panels = Panels::getValidPanels($panels, $this->data->getCollectorProvides());
     }
 
     /**
