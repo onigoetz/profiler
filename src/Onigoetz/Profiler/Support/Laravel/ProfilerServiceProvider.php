@@ -39,7 +39,7 @@ class ProfilerServiceProvider extends ServiceProvider
 
         // Add the namespace manually as the namespace isn't loaded
         // for the moment : `boot` is called after `register`
-        $config->addNamespace('profiler', __DIR__ . '/../../config');
+        $config->addNamespace('profiler', __DIR__ . '/../../../../config');
 
         if (App::environment() !== 'production' && $config->get('profiler::profiler.enabled', true)) {
             $this->needsRegister();
