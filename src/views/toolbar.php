@@ -1,3 +1,4 @@
+<?php use Onigoetz\Profiler\Tools\Config; ?>
 <div id="profiler-container" class="op-container op-container--hide">
     <div class="op-panels">
 
@@ -36,9 +37,9 @@
     </div>
 </div>
 
-<?php if(Config::get('profiler::profiler.assets_auto', true)): ?>
+<?php if(Config::get('assets_auto', true)): ?>
 
-    <?php if(Config::get('profiler::profiler.assets_minified', true)): ?>
+    <?php if(Config::get('assets_minified', true)): ?>
         <script src="<?= asset('packages/onigoetz/profiler/js/script.min.js') ?>"> </script>
         <link rel="stylesheet" href="<?= asset('packages/onigoetz/profiler/css/style.min.css') ?>" />
     <?php else: ?>

@@ -8,14 +8,29 @@ class Config {
 
     public function __construct($path = null)
     {
+        $default_path = __DIR__ . "/../../../config/profiler.php";
+
         if($path == null) {
-            $path = __DIR__ . "/../../../config/profiler.php";
+            $path = $default_path;
         }
 
+        //I know ! this should not be done
+        //TODO :: add some kind of security
         $this->values = include $path;
 
+        //still include the default file in order to avoid problems with missing default values
+        if ($path != $default_path) {
+            $this->values += include $default_path;
+        }
 
         Config::$instance = $this;
+    }
+
+    public static function init($path = null)
+    {
+        if (static::$instance == null) {
+            new static($path);
+        }
     }
 
     public static function get($key)
