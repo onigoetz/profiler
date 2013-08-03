@@ -87,6 +87,7 @@ class ProfilerServiceProvider extends ServiceProvider
 
                 app('stopwatch')->stop('Framework running.');
 
+                // Get from: https://github.com/juy/profiler
                 if (!$this->app->runningInConsole() && !$request->ajax() &&
                     Str::startsWith($response->headers->get('Content-Type'), 'text/html') ) {
                     
