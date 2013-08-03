@@ -2,6 +2,7 @@
 
 use App;
 use Log;
+use Str;
 use Onigoetz\Profiler\DataContainer;
 use Onigoetz\Profiler\DataCollector\FilesDataCollector;
 use Onigoetz\Profiler\Storage\FileStorage;
@@ -14,10 +15,14 @@ use Onigoetz\Profiler\Output\Toolbar;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
+use Onigoetz\Profiler\Tools\Config;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 class ProfilerServiceProvider extends ServiceProvider
 {
+
+    protected $packageName = 'onigoetz/profiler';
+
     /**
      * Bootstrap the application events.
      *
@@ -25,7 +30,7 @@ class ProfilerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->package('onigoetz/profiler');
+        $this->package($this->packageName);
     }
 
     /**
@@ -35,20 +40,10 @@ class ProfilerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $config = $this->app['config'];
+        $in_app_file = $this->app['path'] . '/config/packages/' . $this->packageName . '/profiler.php';
+        Config::init(file_exists($in_app_file) ? $in_app_file : null);
 
-        // Add the namespace manually as the namespace isn't loaded
-        // for the moment : `boot` is called after `register`
-        $config->addNamespace('profiler', __DIR__ . '/../../../../config');
-
-        if (App::environment() !== 'production' && $config->get('profiler::profiler.enabled', true)) {
-            $this->needsRegister();
-        }
-    }
-
-    public function needsRegister()
-    {
-        // Stopwatch
+        // Stopwatch - must be registered so the application doesn't fail if the profiler is disabled
         $this->app['stopwatch'] = $this->app->share(
             function () {
                 $stopwatch = new Stopwatch;
@@ -57,6 +52,13 @@ class ProfilerServiceProvider extends ServiceProvider
             }
         );
 
+        if (!in_array(App::environment(), Config::get('environments_blacklist')) && Config::get('enabled', true)) {
+            $this->needsRegister();
+        }
+    }
+
+    public function needsRegister()
+    {
         $this->app['stopwatch']->start('Application initialisation.', 'section');
 
         // Collect
@@ -81,12 +83,13 @@ class ProfilerServiceProvider extends ServiceProvider
         $this->app->before(array($this, 'start_router_dispatch'));
         $this->app->after(array($this, 'stop_router_dispatch'));
 
-        $this->app->finish(
-            function (Request $request, Response $response) use ($toolbar, $collectors) {
+        $this->app->finish(function ($request, $response) use ($toolbar, $collectors) {
 
                 app('stopwatch')->stop('Framework running.');
 
-                if (!$request->ajax()) {
+                if (!$this->app->runningInConsole() && !$request->ajax() &&
+                    Str::startsWith($response->headers->get('Content-Type'), 'text/html') ) {
+                    
                     $collectors->generateData();
                     $collectors->saveData();
                     echo $toolbar->render();
