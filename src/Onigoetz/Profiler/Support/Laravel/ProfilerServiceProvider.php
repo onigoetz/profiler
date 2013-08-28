@@ -8,6 +8,7 @@ use Onigoetz\Profiler\Storage\FileStorage;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\MonologDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\DatabaseDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\RouterDataCollector;
+use Onigoetz\Profiler\Support\Laravel\DataCollector\Router41DataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\VariablesDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\TimeDataCollector;
 use Onigoetz\Profiler\Output\Toolbar;
@@ -66,10 +67,16 @@ class ProfilerServiceProvider extends ServiceProvider
             ->add(new MonologDataCollector)
             ->add(new FilesDataCollector)
             ->add(new DatabaseDataCollector)
-            ->add(new RouterDataCollector)
             ->add(new TimeDataCollector)
             ->add(new VariablesDataCollector);
             //->setStorage(new FileStorage(array('path' => $this->app['path.storage'] . '/profiler')));
+
+        // Laravel 4.1 has a new routing layer, some stuff is different
+        if(class_exists('\Illuminate\Routing\Controllers\Controller')) {
+            $collectors->add(new RouterDataCollector);
+        } else {
+            $collectors->add(new Router41DataCollector);
+        }
 
         $this->app->before(array($collectors, 'register'));
 

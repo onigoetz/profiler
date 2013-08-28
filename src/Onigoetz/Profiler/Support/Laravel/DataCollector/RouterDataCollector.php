@@ -14,7 +14,7 @@ class RouterDataCollector extends DataCollector
     /**
      * @return mixed get the data to be serialized
      */
-    function getData()
+    public function getData()
     {
         $data = array(
             'currentRoute' => \Route::getCurrentRoute(),
