@@ -94,7 +94,14 @@ class ProfilerServiceProvider extends ServiceProvider
 
                 app('stopwatch')->stop('Framework running.');
 
-                if (!$request->ajax()) {
+                //TODO :: console only output
+
+                // Get from: https://github.com/juy/profiler
+                if (
+                    !$this->app->runningInConsole()
+                    && !$request->ajax()
+                    && strpos($response->headers->get('Content-Type'), 'text/html') === 0
+                ) {
                     $collectors->generateData();
                     $collectors->saveData();
                     echo $toolbar->render();
