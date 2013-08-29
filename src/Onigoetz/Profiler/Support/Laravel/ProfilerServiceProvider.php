@@ -2,6 +2,7 @@
 
 use App;
 use Log;
+use Str;
 use Onigoetz\Profiler\DataContainer;
 use Onigoetz\Profiler\DataCollector\FilesDataCollector;
 use Onigoetz\Profiler\Storage\FileStorage;
@@ -89,12 +90,14 @@ class ProfilerServiceProvider extends ServiceProvider
         $this->app->before(array($this, 'start_router_dispatch'));
         $this->app->after(array($this, 'stop_router_dispatch'));
 
-        $this->app->finish(
-            function (Request $request, Response $response) use ($toolbar, $collectors) {
+        $this->app->finish(function ($request, $response) use ($toolbar, $collectors) {
 
                 app('stopwatch')->stop('Framework running.');
 
-                if (!$request->ajax()) {
+                // Get from: https://github.com/juy/profiler
+                if (!$this->app->runningInConsole() && !$request->ajax() &&
+                    Str::startsWith($response->headers->get('Content-Type'), 'text/html') ) {
+                    
                     $collectors->generateData();
                     $collectors->saveData();
                     echo $toolbar->render();
