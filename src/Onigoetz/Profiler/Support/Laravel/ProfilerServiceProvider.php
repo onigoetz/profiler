@@ -1,20 +1,17 @@
 <?php namespace Onigoetz\Profiler\Support\Laravel;
 
-use App;
-use Log;
-use Onigoetz\Profiler\DataContainer;
-use Onigoetz\Profiler\DataCollector\FilesDataCollector;
-use Onigoetz\Profiler\Storage\FileStorage;
-use Onigoetz\Profiler\Support\Laravel\DataCollector\MonologDataCollector;
-use Onigoetz\Profiler\Support\Laravel\DataCollector\DatabaseDataCollector;
-use Onigoetz\Profiler\Support\Laravel\DataCollector\RouterDataCollector;
-use Onigoetz\Profiler\Support\Laravel\DataCollector\Router41DataCollector;
-use Onigoetz\Profiler\Support\Laravel\DataCollector\VariablesDataCollector;
-use Onigoetz\Profiler\Support\Laravel\DataCollector\TimeDataCollector;
-use Onigoetz\Profiler\Output\Toolbar;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
+use Onigoetz\Profiler\DataCollector\FilesDataCollector;
+use Onigoetz\Profiler\DataContainer;
+use Onigoetz\Profiler\Output\Toolbar;
+use Onigoetz\Profiler\Support\Laravel\DataCollector\DatabaseDataCollector;
+use Onigoetz\Profiler\Support\Laravel\DataCollector\MonologDataCollector;
+use Onigoetz\Profiler\Support\Laravel\DataCollector\Router41DataCollector;
+use Onigoetz\Profiler\Support\Laravel\DataCollector\RouterDataCollector;
+use Onigoetz\Profiler\Support\Laravel\DataCollector\TimeDataCollector;
+use Onigoetz\Profiler\Support\Laravel\DataCollector\VariablesDataCollector;
 use Onigoetz\Profiler\Tools\Config;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -52,7 +49,10 @@ class ProfilerServiceProvider extends ServiceProvider
             }
         );
 
-        if (!in_array(App::environment(), Config::get('environments_blacklist')) && Config::get('enabled', true)) {
+        if (
+            !in_array($this->app->environment(), Config::get('environments_blacklist'))
+            && Config::get('enabled', true)
+        ) {
             $this->needsRegister();
         }
     }
@@ -72,7 +72,7 @@ class ProfilerServiceProvider extends ServiceProvider
             //->setStorage(new FileStorage(array('path' => $this->app['path.storage'] . '/profiler')));
 
         // Laravel 4.1 has a new routing layer, some stuff is different
-        if(class_exists('\Illuminate\Routing\Controllers\Controller')) {
+        if (class_exists('\Illuminate\Routing\Controllers\Controller')) {
             $collectors->add(new RouterDataCollector);
         } else {
             $collectors->add(new Router41DataCollector);
@@ -89,7 +89,7 @@ class ProfilerServiceProvider extends ServiceProvider
         $this->app->before(array($this, 'start_router_dispatch'));
         $this->app->after(array($this, 'stop_router_dispatch'));
 
-        $this->app->finish(
+        $this->app->close(
             function (Request $request, Response $response) use ($toolbar, $collectors) {
 
                 app('stopwatch')->stop('Framework running.');
@@ -104,13 +104,17 @@ class ProfilerServiceProvider extends ServiceProvider
                 ) {
                     $collectors->generateData();
                     $collectors->saveData();
-                    echo $toolbar->render();
+
+                    $content = $response->getContent();
+                    $content .= $toolbar->render();
+                    $response->setContent($content);
                 }
             }
         );
     }
 
-    public function booting() {
+    public function booting()
+    {
         $this->app['stopwatch']->stop('Application initialisation.');
         $this->app['stopwatch']->start('Framework booting.', 'section');
         $this->app['stopwatch']->start('Framework running.', 'section');
@@ -121,11 +125,13 @@ class ProfilerServiceProvider extends ServiceProvider
         $this->app['stopwatch']->stop('Framework booting.');
     }
 
-    public function start_router_dispatch() {
+    public function start_router_dispatch()
+    {
         $this->app['stopwatch']->start('Router dispatch.', 'section');
     }
 
-    public function stop_router_dispatch() {
+    public function stop_router_dispatch()
+    {
         $this->app['stopwatch']->stop('Router dispatch.');
     }
 }
