@@ -39,10 +39,10 @@ foreach ($profile->children as $child) {
     window.onigoetz_profiler.colors = <?php echo json_encode($colors); ?>;
     window.onigoetz_profiler.requests_data = <?php
 
-        $events = [
+        $events = array(
             "max" => sprintf("%F", $events['__section__']->getEndtime()),
             "requests" => [dump_request_data($token, $profile, $events, $events['__section__']->getOrigin())]
-        ];
+        );
 
         // no child requests in laravel
         /*
@@ -56,20 +56,20 @@ foreach ($profile->children as $child) {
 <?php
 function dump_request_data($token, $profile, $events, $origin)
 {
-    return [
+    return array(
         "id" => $token,
         "left" => sprintf("%F", $events['__section__']->getOrigin() - $origin),
         "events" => dump_events($events)
-    ];
+    );
 }
 
 function dump_events($events)
 {
 
-    $treated = [];
+    $treated = array();
     foreach ($events as $name => $event) {
         if ('__section__' != $name) {
-            $entry = [
+            $entry = array(
                 "name" => str_replace("\\", "\\\\", $name),
                 "category" => $event->getCategory(),
                 "origin" => sprintf("%F", $event->getOrigin()),
@@ -78,13 +78,13 @@ function dump_events($events)
                 "duration" => sprintf("%F", $event->getDuration()),
                 "memory" => sprintf("%.1F", $event->getMemory() / 1024 / 1024),
                 "periods" => null
-            ];
+            );
 
             foreach ($event->getPeriods() as $period) {
-                $entry["periods"][] = [
+                $entry["periods"][] = array(
                     "start" => sprintf("%F", $period->getStarttime()),
                     "end" => sprintf("%F", $period->getEndtime())
-                ];
+                );
             }
 
             $treated[] = $entry;
