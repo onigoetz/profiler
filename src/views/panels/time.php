@@ -41,7 +41,7 @@ foreach ($profile->children as $child) {
 
         $events = array(
             "max" => sprintf("%F", $events['__section__']->getEndtime()),
-            "requests" => [dump_request_data($token, $profile, $events, $events['__section__']->getOrigin())]
+            "requests" => array(dump_request_data($token, $profile, $events, $events['__section__']->getOrigin()))
         );
 
         // no child requests in laravel
