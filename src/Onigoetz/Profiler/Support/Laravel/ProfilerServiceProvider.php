@@ -1,7 +1,6 @@
 <?php namespace Onigoetz\Profiler\Support\Laravel;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
 use Onigoetz\Profiler\DataCollector\FilesDataCollector;
 use Onigoetz\Profiler\DataContainer;
@@ -13,6 +12,7 @@ use Onigoetz\Profiler\Support\Laravel\DataCollector\RouterDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\TimeDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\VariablesDataCollector;
 use Onigoetz\Profiler\Tools\Config;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 class ProfilerServiceProvider extends ServiceProvider
@@ -80,9 +80,6 @@ class ProfilerServiceProvider extends ServiceProvider
 
         $this->app->before(array($collectors, 'register'));
 
-        // Prepare Display
-        $toolbar = new Toolbar($collectors);
-
         // Populate timeline
         $this->app->booting(array($this, 'booting'));
         $this->app->booted(array($this, 'booted'));
@@ -90,24 +87,19 @@ class ProfilerServiceProvider extends ServiceProvider
         $this->app->after(array($this, 'stop_router_dispatch'));
 
         $this->app->close(
-            function (Request $request, Response $response) use ($toolbar, $collectors) {
+            function (Request $request, Response $response) use ($collectors) {
 
                 app('stopwatch')->stop('Framework running.');
 
-                //TODO :: console only output
-
-                // Get from: https://github.com/juy/profiler
-                if (
-                    !$this->app->runningInConsole()
-                    && !$request->ajax()
-                    && strpos($response->headers->get('Content-Type'), 'text/html') === 0
-                ) {
+                if (app()->runningInConsole()) {
+                    //TODO :: console only output
+                } elseif (!$request->ajax() && strpos($response->headers->get('Content-Type'), 'text/html') === 0) {
                     $collectors->generateData();
                     $collectors->saveData();
 
-                    $content = $response->getContent();
-                    $content .= $toolbar->render();
-                    $response->setContent($content);
+                    // Generate display
+                    $toolbar = new Toolbar($collectors);
+                    $response->setContent($response->getContent() . $toolbar->render());
                 }
             }
         );
