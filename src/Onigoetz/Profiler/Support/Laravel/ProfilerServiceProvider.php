@@ -67,7 +67,7 @@ class ProfilerServiceProvider extends ServiceProvider
             !in_array($this->app->environment(), Config::get('environments_blacklist'))
             && Config::get('enabled', true)
         ) {
-            //$this->needsRegister();
+            $this->needsRegister();
         }
     }
 
