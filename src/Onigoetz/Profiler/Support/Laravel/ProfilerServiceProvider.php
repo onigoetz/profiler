@@ -12,6 +12,8 @@ use Onigoetz\Profiler\Support\Laravel\DataCollector\RouterDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\TimeDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\VariablesDataCollector;
 use Onigoetz\Profiler\Tools\Config;
+use Onigoetz\Profiler\Utils;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -19,6 +21,11 @@ class ProfilerServiceProvider extends ServiceProvider
 {
 
     protected $packageName = 'onigoetz/profiler';
+
+    /**
+     * @var \Onigoetz\Profiler\DataContainer
+     */
+    protected $collectors;
 
     /**
      * Bootstrap the application events.
@@ -49,11 +56,18 @@ class ProfilerServiceProvider extends ServiceProvider
             }
         );
 
+        // Time collection is done anyway
+        $this->collectors = new DataContainer;
+        $this->collectors->add(new TimeDataCollector);
+
+        // this will be executed anyway
+        $this->app->close(array($this, 'onCloseHeaders'));
+
         if (
             !in_array($this->app->environment(), Config::get('environments_blacklist'))
             && Config::get('enabled', true)
         ) {
-            $this->needsRegister();
+            //$this->needsRegister();
         }
     }
 
@@ -61,58 +75,75 @@ class ProfilerServiceProvider extends ServiceProvider
     {
         $this->app['stopwatch']->start('Application initialisation.', 'section');
 
+        // Laravel 4.1 has a new routing layer, some stuff is different
+        $is_4_0 =  class_exists('\Illuminate\Routing\Controllers\Controller');
+
         // Collect
-        $collectors = new DataContainer;
-        $collectors
+        $this->collectors
             ->add(new MonologDataCollector)
             ->add(new FilesDataCollector)
             ->add(new DatabaseDataCollector)
-            ->add(new TimeDataCollector)
-            ->add(new VariablesDataCollector);
-            //->setStorage(new FileStorage(array('path' => $this->app['path.storage'] . '/profiler')));
+            ->add(new VariablesDataCollector)
+            ->add(($is_4_0) ? new RouterDataCollector : new Router41DataCollector)
+            //->setStorage(new FileStorage(array('path' => $this->app['path.storage'] . '/profiler')))
+        ;
 
-        // Laravel 4.1 has a new routing layer, some stuff is different
-        if (class_exists('\Illuminate\Routing\Controllers\Controller')) {
-            $collectors->add(new RouterDataCollector);
-        } else {
-            $collectors->add(new Router41DataCollector);
-        }
-
-        $this->app->before(array($collectors, 'register'));
+        $this->app->before(array($this->collectors, 'register'));
 
         // Populate timeline
-        $this->app->booting(array($this, 'booting'));
-        $this->app->booted(array($this, 'booted'));
+        $this->app->booting(array($this, 'onBooting'));
+        $this->app->booted(array($this, 'onBooted'));
         $this->app->before(array($this, 'start_router_dispatch'));
         $this->app->after(array($this, 'stop_router_dispatch'));
+        $this->app->close(array($this, 'onClose'));
+    }
 
-        $this->app->close(
-            function (Request $request, Response $response) use ($collectors) {
+    public function onCloseHeaders(Request $request, Response $response)
+    {
+        try {
+            $this->app['stopwatch']->stop('Framework running.');
+        } catch(\LogicException $e) {
+            //no problem here, this event might not be started
+        }
 
-                app('stopwatch')->stop('Framework running.');
 
-                if (app()->runningInConsole()) {
-                    //TODO :: console only output
-                } elseif (!$request->ajax() && strpos($response->headers->get('Content-Type'), 'text/html') === 0) {
-                    $collectors->generateData();
-                    $collectors->saveData();
+        //Generate data anyway
+        $this->collectors->generateData();
+        $this->collectors->saveData();
 
-                    // Generate display
-                    $toolbar = new Toolbar($collectors);
-                    $response->setContent($response->getContent() . $toolbar->render());
-                }
-            }
+        $time = '';
+        $time_collector = $this->collectors->getData();
+        if (array_key_exists('time', $time_collector)) {
+            $time = Utils::getReadableTime($time_collector['time']['totalTime'] * 1000);
+        }
+
+        $response->headers->add(
+            array(
+                'X-Profile-env' => $this->app->environment(),
+                'X-Profile-time' => $time
+            )
         );
     }
 
-    public function booting()
+    public function onClose(Request $request, Response $response)
+    {
+        if ($this->app->runningInConsole()) {
+            //TODO :: console only output
+        } elseif (!$request->ajax() && strpos($response->headers->get('Content-Type'), 'text/html') === 0) {
+            // Generate display
+            $toolbar = new Toolbar($this->collectors);
+            $response->setContent($response->getContent() . $toolbar->render());
+        }
+    }
+
+    public function onBooting()
     {
         $this->app['stopwatch']->stop('Application initialisation.');
         $this->app['stopwatch']->start('Framework booting.', 'section');
         $this->app['stopwatch']->start('Framework running.', 'section');
     }
 
-    public function booted()
+    public function onBooted()
     {
         $this->app['stopwatch']->stop('Framework booting.');
     }
