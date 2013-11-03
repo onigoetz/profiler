@@ -8,17 +8,17 @@
 $token = 'laravel';
 $profile = null;
 $colors = array(
-    'default' => '#aacd4e',
-    'section' => '#666',
-    'event_listener' =>  '#3dd',
-    'event_listener_loading' =>  '#add',
-    'template' =>  '#dd3',
-    'doctrine' =>  '#d3d',
-    'propel' =>  '#f4d',
-    'child_sections' =>  '#eed',
+    'default' =>                '#aacd4e',
+    'section' =>                '#666',
+    'event_listener' =>         '#3dd',
+    //'event_listener_loading' => '#add',
+    'template' =>               '#dd3',
+    //'doctrine' =>               '#d3d',
+    //'propel' =>                 '#f4d',
+    //'child_sections' =>         '#eed',
 );
 
- echo display_timeline('timeline_' . $token, $events, $colors);
+echo display_timeline('timeline_' . $token, $colors);
 
 
 // no child requests in laravel
@@ -39,7 +39,7 @@ foreach ($profile->children as $child) {
     window.onigoetz_profiler.colors = <?php echo json_encode($colors); ?>;
     window.onigoetz_profiler.requests_data = <?php
 
-        $events = array(
+        $end_events = array(
             "max" => sprintf("%F", $events['__section__']->getEndtime()),
             "requests" => array(dump_request_data($token, $profile, $events, $events['__section__']->getOrigin()))
         );
@@ -51,9 +51,32 @@ foreach ($profile->children as $child) {
         }
         */
 
-        echo json_encode($events); ?>
+        echo json_encode($end_events); ?>
 </script>
+
 <?php
+/* Used to debug the time output
+echo '<table>
+    <tr>
+        <th>name</th>
+        <th>category</th>
+        <th>origin</th>
+        <th>starttime</th>
+        <th>endtime</th>
+    </tr>';
+
+foreach ($events as $name => $event) {
+    echo '<tr>';
+    echo '<td>' . str_replace("\\", "\\\\", $name) . '</td>';
+    echo '<td>' . $event->getCategory() . '</td>';
+    echo '<td>' . sprintf("%F", $event->getOrigin()) . '</td>';
+    echo '<td>' . sprintf("%F", $event->getStarttime()) . '</td>';
+    echo '<td>' . sprintf("%F", $event->getEndtime()) . '</td>';
+    echo '</tr>';
+}
+echo '</table>';/**/
+
+
 function dump_request_data($token, $profile, $events, $origin)
 {
     return array(
@@ -94,16 +117,16 @@ function dump_events($events)
     return $treated;
 }
 
-function display_timeline($id, $events, $colors)
+function display_timeline($id, $colors)
 {
     ?>
     <div class="sf-profiler-timeline">
         <div class="legends">
             <?php foreach ($colors as $category => $color): ?>
-            <span data-color="<?php echo $color ?>"><?php echo $category ?></span>
+            <span data-color="<?=$color ?>"><?= $category ?></span>
             <?php endforeach ?>
         </div>
-        <canvas width="680" height="" id="<?php echo $id ?>" class="timeline"></canvas>
+        <canvas width="680" height="" id="<?= $id ?>" class="timeline"></canvas>
     </div>
-<?php
+    <?php
 }

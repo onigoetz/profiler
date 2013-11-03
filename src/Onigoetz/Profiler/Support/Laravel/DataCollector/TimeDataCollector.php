@@ -30,9 +30,13 @@ class TimeDataCollector extends DataCollector {
             $this->register();
         }
 
-        Stopwatch::stopSection('__application__');
+        $this->data['events'] = Stopwatch::getEvents();
 
-        $this->data['events'] = Stopwatch::getSectionEvents('__application__');
+        //In some cases the start time can be calculated wrong, in this case we take the first timer's origin
+        $stopwatchStartTime = current($this->data['events']);
+        if($stopwatchStartTime->getOrigin() / 1000 < $this->data['appStartTime']) {
+            $this->data['appStartTime'] = $stopwatchStartTime->getOrigin() / 1000;
+        }
 
         $this->data['totalTime'] = microtime(true) - $this->data['appStartTime'];
 

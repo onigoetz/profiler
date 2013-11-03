@@ -7,10 +7,6 @@ Next Generation PHP Profiler for Laravel
 
 ## Installation
 
-__This package is currently in development, use it at your own risk !!!__
-
-__!!! UPDATE :: the ProfilerServiceProvider was moved to another namespace, update your app configs !!!__
-
 There are two ways to install this profiler
 
 ### Require
@@ -39,9 +35,9 @@ if (class_exists("Onigoetz\\Profiler\\Support\\Laravel\\ProfilerServiceProvider"
     $provider = new Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider(app());
     $app->register($provider);
     $provider->boot();
-    $provider->booting();
-    $provider->booted();
-    $provider->start_router_dispatch();
+    $provider->onBooting();
+    $provider->onBooted();
+    $provider->onBefore();
 }
 ```
 
@@ -61,15 +57,15 @@ You can override all default values by doing `./artisan config:publish onigoetz/
 - `slow_query` Threshold in milliseconds after which it is considered
 
 ## Panels
-All panels are work in progress for the moment, many changes may evolve
+All panels are work in progress for the moment, many changes may happen
 
 ### Time
 This panel provides a way to watch for events in a graphical way.
 
 You can profile anything anywhere in your code by using the `Stopwatch` facade.
 
-It's a facade for the [Stopwatch Symfony component](http://symfony.com/doc/current/components/stopwatch.html)
-so you don't have to initalize it to use it
+It's a facade for a stopwatch heavily inspired from [Stopwatch Symfony component](http://symfony.com/doc/current/components/stopwatch.html), the difference is that mine doesn't support sections
+As any Laravel Facade you don't have to initialize it, just use it
 
 __Example:__
 
@@ -113,9 +109,6 @@ This Profiler was created and improved in a few years and is inspired from
 * Symfony web profiler bundle
 * Some other small improvements from other profilers I don't remember
 
-It is currently in a complete rewrite to be extensible and configurable.
-
-
 ## How it works
 Each panel is a class that has some methods to do it's stuff
 
@@ -132,3 +125,4 @@ Each panel is a class that has some methods to do it's stuff
 * Create some kind of live panel where it shows all requests that have been made, the idea is to run it in development only
 * Handle redirects -> show a link to open the last run in a popup
 * Manage with the laravel community to Add DataCollectors like in Symfony to be able to profile Laravel more accurately
+* Integrations with other frameworks

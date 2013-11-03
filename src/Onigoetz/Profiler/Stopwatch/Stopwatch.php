@@ -35,7 +35,11 @@ class Stopwatch
      */
     public function __construct($origin = null)
     {
-        $this->origin = is_numeric($origin) ? $origin : null;
+        $this->origin = ($origin)?: (microtime(true) + 1000);
+
+        // Create an application wide event, to track the whole application's time
+        $this->events['__section__'] = new StopwatchEvent($this->origin, 'section');
+        $this->events['__section__']->start();
     }
 
     /**
@@ -49,7 +53,7 @@ class Stopwatch
     public function start($name, $category = null)
     {
         if (!isset($this->events[$name])) {
-            $this->events[$name] = new StopwatchEvent($this->origin ?: microtime(true) * 1000, $category);
+            $this->events[$name] = new StopwatchEvent($this->origin, $category);
         }
 
         return $this->events[$name]->start();
@@ -99,8 +103,19 @@ class Stopwatch
         return $this->stop($name)->start();
     }
 
+    /**
+     * Get all events - stop the ones that are still open
+     *
+     * @return array|StopwatchEvent[]
+     */
     public function getEvents()
     {
+        foreach($this->events as $event) {
+            if($event->isStarted()) {
+                $event->ensureStopped();
+            }
+        }
+
         return $this->events;
     }
 }

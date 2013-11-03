@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use Onigoetz\Profiler\Stopwatch\Stopwatch;
 use Onigoetz\Profiler\DataCollector\FilesDataCollector;
 use Onigoetz\Profiler\DataContainer;
 use Onigoetz\Profiler\Output\Toolbar;
@@ -13,9 +14,7 @@ use Onigoetz\Profiler\Support\Laravel\DataCollector\TimeDataCollector;
 use Onigoetz\Profiler\Support\Laravel\DataCollector\VariablesDataCollector;
 use Onigoetz\Profiler\Tools\Config;
 use Onigoetz\Profiler\Utils;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Stopwatch\Stopwatch;
 
 class ProfilerServiceProvider extends ServiceProvider
 {
@@ -50,9 +49,7 @@ class ProfilerServiceProvider extends ServiceProvider
         // Stopwatch - must be registered so the application doesn't fail if the profiler is disabled
         $this->app['stopwatch'] = $this->app->share(
             function () {
-                $stopwatch = new Stopwatch;
-                $stopwatch->openSection(); //open application wide section
-                return $stopwatch;
+                return new Stopwatch(LARAVEL_START * 1000);
             }
         );
 
@@ -61,7 +58,7 @@ class ProfilerServiceProvider extends ServiceProvider
         $this->collectors->add(new TimeDataCollector);
 
         // this will be executed anyway
-        $this->app->close(array($this, 'onCloseHeaders'));
+        $this->app->after(array($this, 'onCloseHeaders'));
 
         if (
             !in_array($this->app->environment(), Config::get('environments_blacklist'))
@@ -93,9 +90,8 @@ class ProfilerServiceProvider extends ServiceProvider
         // Populate timeline
         $this->app->booting(array($this, 'onBooting'));
         $this->app->booted(array($this, 'onBooted'));
-        $this->app->before(array($this, 'start_router_dispatch'));
-        $this->app->after(array($this, 'stop_router_dispatch'));
-        $this->app->close(array($this, 'onClose'));
+        $this->app->before(array($this, 'onBefore'));
+        $this->app->after(array($this, 'onAfter'));
     }
 
     public function onCloseHeaders(Request $request, Response $response)
@@ -105,7 +101,6 @@ class ProfilerServiceProvider extends ServiceProvider
         } catch(\LogicException $e) {
             //no problem here, this event might not be started
         }
-
 
         //Generate data anyway
         $this->collectors->generateData();
@@ -125,17 +120,6 @@ class ProfilerServiceProvider extends ServiceProvider
         );
     }
 
-    public function onClose(Request $request, Response $response)
-    {
-        if ($this->app->runningInConsole()) {
-            //TODO :: console only output
-        } elseif (!$request->ajax() && strpos($response->headers->get('Content-Type'), 'text/html') === 0) {
-            // Generate display
-            $toolbar = new Toolbar($this->collectors);
-            $response->setContent($response->getContent() . $toolbar->render());
-        }
-    }
-
     public function onBooting()
     {
         $this->app['stopwatch']->stop('Application initialisation.');
@@ -148,13 +132,19 @@ class ProfilerServiceProvider extends ServiceProvider
         $this->app['stopwatch']->stop('Framework booting.');
     }
 
-    public function start_router_dispatch()
+    public function onBefore()
     {
         $this->app['stopwatch']->start('Router dispatch.', 'section');
     }
 
-    public function stop_router_dispatch()
+    public function onAfter(Request $request, Response $response)
     {
-        $this->app['stopwatch']->stop('Router dispatch.');
+        if ($this->app->runningInConsole()) {
+            //TODO :: console only output
+        } elseif (!$request->ajax() && strpos($response->headers->get('Content-Type'), 'text/html') === 0) {
+            // Generate display
+            $toolbar = new Toolbar($this->collectors);
+            $response->setContent($response->getContent() . $toolbar->render());
+        }
     }
 }
