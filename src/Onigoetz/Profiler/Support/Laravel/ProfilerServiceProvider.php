@@ -49,7 +49,7 @@ class ProfilerServiceProvider extends ServiceProvider
         // Stopwatch - must be registered so the application doesn't fail if the profiler is disabled
         $this->app['stopwatch'] = $this->app->share(
             function () {
-                return new Stopwatch(LARAVEL_START * 1000);
+                return new Stopwatch(defined('LARAVEL_START')? LARAVEL_START * 1000 : null);
             }
         );
 
