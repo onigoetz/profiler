@@ -6,8 +6,8 @@
     <table class="op-table">
         <?php foreach ($logs as $log): ?>
             <tr>
-                <td><?php $logger->getLevelName($log['level']) ?></td>
-                <td> <?php nl2br(print_r($log['message'], true)) ?></td>
+                <td><?php echo $logger->getLevelName($log['level']) ?></td>
+                <td> <?php echo nl2br(print_r($log['message'], true)) ?></td>
             </tr>
         <?php endforeach ?>
     </table>
