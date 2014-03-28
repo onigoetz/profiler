@@ -23,32 +23,35 @@ class DatabaseDataCollector extends DataCollector
             'time' => 0
         );
 
-        $threshold = Config::get('slow_query');
+        if (count(DB::getConnections())) {
 
-        foreach (DB::getQueryLog() as $query) {
-            $queryTotals['count'] += 1;
+            $threshold = Config::get('slow_query');
 
-            //base informations
-            $query['sql'] = str_replace("\n", '', $query['query']);
-            $queryTotals['time'] += $query['time'];
+            foreach (DB::getQueryLog() as $query) {
+                $queryTotals['count'] += 1;
 
-            //duplicate queries
-            $query['sql_simplified'] = $this->simplifiedQuery($query['sql']);
-            if (array_key_exists($query['sql_simplified'], $duplicates)) {
-                $duplicates[$query['sql_simplified']]['time'] += $query['time'];
-                $duplicates[$query['sql_simplified']]['qty']++;
-            } else {
-                $duplicates[$query['sql_simplified']] = array('time' => $query['time'], 'qty' => 1);
+                //base informations
+                $query['sql'] = str_replace("\n", '', $query['query']);
+                $queryTotals['time'] += $query['time'];
+
+                //duplicate queries
+                $query['sql_simplified'] = $this->simplifiedQuery($query['sql']);
+                if (array_key_exists($query['sql_simplified'], $duplicates)) {
+                    $duplicates[$query['sql_simplified']]['time'] += $query['time'];
+                    $duplicates[$query['sql_simplified']]['qty']++;
+                } else {
+                    $duplicates[$query['sql_simplified']] = array('time' => $query['time'], 'qty' => 1);
+                }
+
+                if ($query['time'] >= $threshold) {
+                    $query['slow'] = 'slow';
+                }
+
+                //TODO :: slow query threshold
+                //TODO :: implement "explain"
+
+                $queries[] = $query;
             }
-
-            if ($query['time'] >= $threshold) {
-                $query['slow'] = 'slow';
-            }
-
-            //TODO :: slow query threshold
-            //TODO :: implement "explain"
-
-            $queries[] = $query;
         }
 
         foreach ($duplicates as $query => $duplicate) {
