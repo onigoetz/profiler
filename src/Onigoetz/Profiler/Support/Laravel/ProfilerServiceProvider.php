@@ -88,7 +88,12 @@ class ProfilerServiceProvider extends ServiceProvider
         $this->app->before(array($this->collectors, 'register'));
 
         // Populate timeline
-        $this->app->booting(array($this, 'onBooting'));
+        if($this->app->isBooted()) {
+            $this->onBooting();
+        } else {
+            $this->app->booting(array($this, 'onBooting'));
+        }
+
         $this->app->booted(array($this, 'onBooted'));
         $this->app->before(array($this, 'onBefore'));
         $this->app->after(array($this, 'onAfter'));

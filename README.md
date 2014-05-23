@@ -31,12 +31,10 @@ In `app/config/app.php` add `'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'` to yo
 At the end of `app/start/global.php` add:
 
 ```php
-if (class_exists("Onigoetz\\Profiler\\Support\\Laravel\\ProfilerServiceProvider")) {
+if (!App::runningInConsole() && class_exists("Onigoetz\\Profiler\\Support\\Laravel\\ProfilerServiceProvider")) {
     $provider = new Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider(app());
-    $app->register($provider);
+    App::register($provider);
     $provider->boot();
-    $provider->onBooting();
-    $provider->onBooted();
     $provider->onBefore();
 }
 ```
