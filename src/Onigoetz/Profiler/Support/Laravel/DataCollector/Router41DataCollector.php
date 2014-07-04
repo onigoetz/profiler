@@ -48,7 +48,7 @@ class Router41DataCollector extends DataCollector
 
     protected function getRouteInformation(Route $route, $current)
     {
-        $uri = head($route->methods()).' <a href="' . $this->url->to($route->uri()) . '">' . $route->uri() . '</a>';
+        $uri = implode(' | ', $route->methods()).' <a href="' . $this->url->to($route->uri()) . '">' . $route->uri() . '</a>';
 
         return array(
             'current' => ($current == $route),
@@ -93,7 +93,7 @@ class Router41DataCollector extends DataCollector
             // we have already gathered up then return them back out to these consumers.
             $inner = $this->getMethodPatterns($route->uri(), $method);
 
-            $patterns = array_merge($patterns, $inner);
+            $patterns = array_merge($patterns, array_keys($inner));
         }
 
         return $patterns;

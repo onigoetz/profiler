@@ -7,40 +7,21 @@ Next Generation PHP Profiler for Laravel
 
 ## Installation
 
-There are two ways to install this profiler
-
-### Require
-
-Add this dependency to `composer.json` with this command:
-`composer require onigoetz/profiler:dev-master`
-
-in `app/config/app.php`
-
-- Add `'Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider'` to your providers
-- Add `'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'` to your aliases
-
-Then do `./artisan asset:publish onigoetz/profiler` to publish the javascript/css files
-
-### Require-dev (only on development machine)
-
 Add this dependency to `composer.json` with this command:
 `composer require-dev onigoetz/profiler:dev-master`
 
-In `app/config/app.php` add `'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'` to your aliases.
+And add this in your `configuration/local/app.php` file. This will allow the Profiler to only load locally and will not clutter your production build.
 
-At the end of `app/start/global.php` add:
-
-```php
-if (!App::runningInConsole() && class_exists("Onigoetz\\Profiler\\Support\\Laravel\\ProfilerServiceProvider")) {
-    $provider = new Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider(app());
-    App::register($provider);
-    $provider->boot();
-    $provider->onBefore();
-}
+````php
+    'providers' => append_config(
+        ['Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider']
+    ),
+    'aliases' => append_config(
+        ['Stopwatch' => 'Onigoetz\Profiler\Stopwatch']
+    )
 ```
 
-This way is not recommended as it means that each call to stopwatch has to be wrapped in a `if(class_exists...)`
-
+Then do `./artisan asset:publish onigoetz/profiler` to publish the javascript/css files
 
 ## Configuration
 By default, the profiler will run only in environment that are not "production"
@@ -49,7 +30,6 @@ You can override all default values by doing `./artisan config:publish onigoetz/
 
 ### Options
 
-- `enabled` A simple boolean to enable the profiler or not.
 - `assets_auto` If set to true (default) it will include its assets itself, you can disable this to add the assets to your own build process
 - `panels` An array of classes that extend `Onigoetz\Profiler\Panel` you can add your own panels and reorder them.
 - `slow_query` Threshold in milliseconds after which it is considered

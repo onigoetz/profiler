@@ -60,16 +60,6 @@ class ProfilerServiceProvider extends ServiceProvider
         // this will be executed anyway
         $this->app->after(array($this, 'onCloseHeaders'));
 
-        if (
-            !in_array($this->app->environment(), Config::get('environments_blacklist'))
-            && Config::get('enabled', true)
-        ) {
-            $this->needsRegister();
-        }
-    }
-
-    public function needsRegister()
-    {
         $this->app['stopwatch']->start('Application initialisation.', 'section');
 
         // Laravel 4.1 has a new routing layer, some stuff is different
