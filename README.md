@@ -10,14 +10,17 @@ Next Generation PHP Profiler for Laravel
 Add this dependency to `composer.json` with this command:
 `composer require-dev onigoetz/profiler:dev-master`
 
-And add this in your `configuration/local/app.php` file. This will allow the Profiler to only load locally and will not clutter your production build.
+And add this in your `configuration/app.php` file. This will allow the Profiler to only load locally and will not clutter your production build.
 
 ````php
-    'providers' => append_config(
-        ['Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider']
+    'providers' => array(
+        'Onigoetz\Profiler\Support\Laravel\ProfilerServiceProvider',
+        ...
     ),
-    'aliases' => append_config(
-        ['Stopwatch' => 'Onigoetz\Profiler\Stopwatch']
+    'aliases' => array(
+        ...
+        'Stopwatch' => 'Onigoetz\Profiler\Stopwatch'
+        ...
     )
 ```
 
@@ -30,6 +33,7 @@ You can override all default values by doing `./artisan config:publish onigoetz/
 
 ### Options
 
+- `environments` An array of environments on which the profiler may be shown
 - `assets_auto` If set to true (default) it will include its assets itself, you can disable this to add the assets to your own build process
 - `panels` An array of classes that extend `Onigoetz\Profiler\Panel` you can add your own panels and reorder them.
 - `slow_query` Threshold in milliseconds after which it is considered

@@ -53,6 +53,11 @@ class ProfilerServiceProvider extends ServiceProvider
             }
         );
 
+        // Must be enabled for the current environment
+        if (!in_array($this->app->environment(), Config::get('environments'))) {
+            return;
+        }
+
         // Time collection is done anyway
         $this->collectors = new DataContainer;
         $this->collectors->add(new TimeDataCollector);
