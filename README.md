@@ -1,11 +1,10 @@
 # Laravel Profiler
-Next Generation PHP Profiler for Laravel
 
-## __DISCONTINUED__
-
-This project is no longer maintained and I won't provide support for it.
-
-I recommend to use [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) or [PHP Debugbar](http://phpdebugbar.com/)
+> ## __DISCONTINUED__
+>
+> This project is no longer maintained and I won't provide support for it.
+>
+> I recommend to use [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) or [PHP Debugbar](http://phpdebugbar.com/)
 
 ## Installation
 
