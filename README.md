@@ -1,9 +1,10 @@
 # Laravel Profiler
 Next Generation PHP Profiler for Laravel
 
-![Closed version of the profiler](https://raw.github.com/onigoetz/profiler/master/screenshots/closed.png)
+## __DISCONTINUED__
 
-[More screenshots](https://github.com/onigoetz/profiler/tree/master/screenshots "screenshots on github")
+This project is no longer maintained and I won't provide support for it.
+I recommend to use [Laravel Debugbar](https://github.com/barryvdh/laravel-debugbar) or [PHP Debugbar](http://phpdebugbar.com/)
 
 ## Installation
 
@@ -36,7 +37,7 @@ You can override all default values by doing `./artisan config:publish onigoetz/
 - `environments` An array of environments on which the profiler may be shown
 - `assets_auto` If set to true (default) it will include its assets itself, you can disable this to add the assets to your own build process
 - `panels` An array of classes that extend `Onigoetz\Profiler\Panel` you can add your own panels and reorder them.
-- `slow_query` Threshold in milliseconds after which it is considered
+- `slow_query` Threshold in milliseconds after which it is considered slow
 
 ## Panels
 All panels are work in progress for the moment, many changes may happen
@@ -81,16 +82,6 @@ List of loaded files and their size
 ### Bookmarklets
 A list of useful bookmarklets + loaded scripts on the current page
 
-## Why a new profiler ?
-Yes, I know, there are a lot of profilers out there. But for my needs I wanted a profiler that doesn't take a lot of place on the screen and quickly gives useful informations about the application.
-
-## Inspiration
-This Profiler was created and improved in a few years and is inspired from
-
-* PHP Quick Profiler
-* Symfony web profiler bundle
-* Some other small improvements from other profilers I don't remember
-
 ## How it works
 Each panel is a class that has some methods to do it's stuff
 
@@ -100,11 +91,3 @@ Each panel is a class that has some methods to do it's stuff
 * `getName()` return a string with the name, will be used as an id and class in HTML
 * `render()` return a `View` with the rendered panel
 * `renderTitle()` return a `PanelTitle` object with the title properties
-
-
-## //TODO
-* Save the profiling informations to a file to be able to show it again
-* Create some kind of live panel where it shows all requests that have been made, the idea is to run it in development only
-* Handle redirects -> show a link to open the last run in a popup
-* Manage with the laravel community to Add DataCollectors like in Symfony to be able to profile Laravel more accurately
-* Integrations with other frameworks
